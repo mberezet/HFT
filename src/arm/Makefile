@@ -1,7 +1,7 @@
 ifneq (${KERNELRELEASE},)
 
 # KERNELRELEASE defined: we are being compiled as part of the Kernel
-        obj-m := driver.o
+        obj-m := my_driver.o
 
 else
 
@@ -10,17 +10,17 @@ else
 	KERNEL_SOURCE := /usr/src/linux
         PWD := $(shell pwd)
 
-default: module driver 
+default: module my_driver 
 
 #module:
 #	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
 module:
-	${MAKE} -C ${KERNEL_SOURCE} SUBDIRS=${PWD} modules
+	${MAKE} -C -L${KERNEL_SOURCE} SUBDIRS=${PWD} modules
 
 clean:
 	${MAKE} -C ${KERNEL_SOURCE} SUBDIRS=${PWD} clean
-	${RM} hello
+	${RM} my_driver
 
 socfpga.dtb : socfpga.dtb
 	dtc -O dtb -o socfpga.dtb socfpga.dts

@@ -22,14 +22,14 @@
 
 /*
  * Macros for device 'vga_led_0', class 'vga_led'
- * The macros are prefixed with 'VGA_LED_0_'.
+ * The macros are prefixed with 'MY_DRIVER_'.
  * The prefix is the slave descriptor.
  */
-#define VGA_LED_0_COMPONENT_TYPE vga_led
-#define VGA_LED_0_COMPONENT_NAME vga_led_0
-#define VGA_LED_0_BASE 0x0
-#define VGA_LED_0_SPAN 8
-#define VGA_LED_0_END 0x7
+#define MY_DRIVER_COMPONENT_TYPE my_driver
+#define MY_DRIVER_COMPONENT_NAME my_driver
+#define MY_DRIVER_BASE 0x0
+#define MY_DRIVER_SPAN 8
+#define MY_DRIVER_END 0x7
 
 
 #endif /* _ALTERA_HPS_0_H_ */
