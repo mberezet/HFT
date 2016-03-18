@@ -1,0 +1,5 @@
+*.exe
+*.o
+*.class
+a.out
+.DS_Store
