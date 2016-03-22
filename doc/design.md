@@ -19,6 +19,10 @@
 
 ##1. Background
 
+High frequency trading is a trading platform that uses computer algorithms and powerful technology tools to perform a large number of trades at very high speeds.  Initially, HFT firms operated on a time scale of seconds, but as technology has improved, so has the time required to execute a trade.  Firms now compete at the milli- or even microsecond level.  This has led to many firms turning to field programmable gate arrays (FPGAs) to achieve greater performance.
+
+Our project focuses on the foreign exchange market (FOREX).  
+
 ===
 
 ##2. Design Overview
