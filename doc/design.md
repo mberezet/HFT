@@ -21,7 +21,11 @@
 
 High frequency trading is a trading platform that uses computer algorithms and powerful technology tools to perform a large number of trades at very high speeds.  Initially, HFT firms operated on a time scale of seconds, but as technology has improved, so has the time required to execute a trade.  Firms now compete at the milli- or even microsecond level.  This has led to many firms turning to field programmable gate arrays (FPGAs) to achieve greater performance.
 
-Our project focuses on the foreign exchange market (FOREX).  
+Our project focuses on the foreign exchange market (Forex).  There is no centralized exchange for forex; all trading is conducted over the counter via computer networks between traders around the world.  Unlike the stock market, the forex market is open 24 hours for most of the week.
+
+Currencies are priced in relation to each other and quoted in pairs that look like this:
+<p align="center">EUR/USD 1.1837</p>
+The currency on the left is the base currency and the one on the right is called the cross currency.  The base currency is always assumed to be one unit, and the quoted price 
 
 ===
 
