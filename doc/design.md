@@ -23,6 +23,23 @@
 
 ##1. Background
 
+High frequency trading is a trading platform that uses computer algorithms and powerful technology tools to perform a large number of trades at very high speeds. Initially, HFT firms operated on a time scale of seconds, but as technology has improved, so has the time required to execute a trade. Firms now compete at the milli- or even microsecond level. This has led to many firms turning to field programmable gate arrays (FPGAs) to achieve greater performance.
+
+Our project focuses on triangular arbitrage opportunities on the foreign exchange market (Forex). The forex market is a decentralized marketplace for trading currency. All trading is conducted over the counter via computer networks between traders around the world. Unlike the stock market, the forex market is open 24 hours for most of the week.
+
+Currencies are priced in relation to each other and quoted in pairs that look like this:
+<p align="center">EUR/USD 1.1837</p>
+The currency on the left is the base currency and the one on the right is called the cross currency or quote. The base currency is always assumed to be one unit, and the quoted price is what the base currency is equal to in the other currency. In this example, 1 Euro = 1.1837 USD.
+
+Triangular arbitrage takes advantage of pricing inequalities across three different currencies to make a profit. One currency is exchanged for a second, the second for a third currency, and finally the third back to the original currency. For example, if the exchange rates for the following currency pairs were:
+<p align="center">EUR/USD 1.1837</p>
+<p align="center">EUR/GBP 0.7231</p>
+<p align="center">GBP/USD 1.6388</p>
+A trader could use 11,847 USD to buy 10,000 Euros.  Those Euros could be sold for 7231 British Pounds, which could then be sold for 11,850 USD, netting a profit of 13 USD. Unfortunately, acting on these price inefficiencies quickly corrects them, meaning traders must be ready to act immediately when an arbitrage opportunity occurs.
+
+Our group hopes to implement a forex arbitrage calculator on an fpga using a parallelized Bellman-Ford algorithm. We believe this will be fast enough to detect and act on arbitrage opportunities.
+
+
 ===
 
 ##2. Design Overview
@@ -132,6 +149,16 @@ else
 ===
 
 ##6. Decision-Making
+
+To find arbitrage opportunities, we will use the Bellman-Ford algorithm with edge weights transformed such that
+<p align="center">w’= ln(w)</p>
+We are looking for graph cycles where the product of edge weights is greater than 1
+<p align="center">w<sub>1</sub> * w<sub>2</sub> * w<sub>3</sub> * … * w<sub>n</sub> > 1</p>
+Taking the log of both sides results in
+<p align="center">log(w<sub>1</sub>) + log(w<sub>2</sub>) + log(w<sub>3</sub>) + … + log(w<sub>n</sub>) > 0</p>
+Then we take the negative log, resulting in a sign flip
+<p align="center">log(w<sub>1</sub>) + log(w<sub>2</sub>) + log(w<sub>3</sub>) + … + log(w<sub>n</sub>) < 0</p>
+Now we are looking for any negative cycles that appear. This is easily done with the Bellman-Ford algorithm, which detects negative cycles (see Algorithm 6.1).  When a negative cycle appears we will trace back through the path and execute a trade across the correct currencies.
 
 ===
 
