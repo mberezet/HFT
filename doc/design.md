@@ -31,7 +31,10 @@ Triangular arbitrage takes advantage of pricing inequalities across three differ
 <p align="center">EUR/USD 1.1837</p>
 <p align="center">EUR/GBP 0.7231</p>
 <p align="center">GBP/USD 1.6388</p>
-A trader could use 11,847 USD to buy 10,000 Euros.  Those Euros could be sold for 7231 British Pounds, which could then be sold for 11,850 USD, netting a profit of 13 USD.
+A trader could use 11,847 USD to buy 10,000 Euros.  Those Euros could be sold for 7231 British Pounds, which could then be sold for 11,850 USD, netting a profit of 13 USD. Unfortunately, acting on these price inefficiencies quickly corrects them, meaning traders must be ready to act immediately when an arbitrage opportunity occurs.
+
+Our group hopes to implement a forex arbitrage calculator on an fpga using a parallelized Bellman-Ford algorithm. We believe this will be fast enough to detect and act on arbitrage opportunities.
+
 
 ===
 
@@ -129,8 +132,6 @@ else
 ===
 
 ##7. Decision-Making
-
-Our 
 
 ===
 
