@@ -133,6 +133,16 @@ else
 
 ##7. Decision-Making
 
+To find arbitrage opportunities, we will use the Bellman-Ford algorithm with edge weights transformed such that
+<p align="center">w’= ln(w)</p>
+We are looking for graph cycles where the product of edge weights is greater than 1
+<p align="center">w<sub>1</sub> * w<sub>2</sub> * w<sub>3</sub> * … * w<sub>n</sub> > 1</p>
+Taking the log of both sides results in
+<p align="center">log(w<sub>1</sub>) + log(w<sub>2</sub>) + log(w<sub>3</sub>) + … + log(w<sub>n</sub>) > 0</p>
+Then we take the negative log, resulting in a sign flip
+<p align="center">log(w<sub>1</sub>) + log(w<sub>2</sub>) + log(w<sub>3</sub>) + … + log(w<sub>n</sub>) < 0</p>
+Now we are looking for any negative cycles that appear. This is easily done with the Bellman-Ford algorithm, which detects negative cycles (see Algorithm 6.1).  When a negative cycle appears we will trace back through the path and execute a trade across the correct currencies.
+
 ===
 
 ##8. Milestones
