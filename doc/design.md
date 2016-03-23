@@ -25,9 +25,13 @@ Our project focuses on triangular arbitrage opportunities on the foreign exchang
 
 Currencies are priced in relation to each other and quoted in pairs that look like this:
 <p align="center">EUR/USD 1.1837</p>
-The currency on the left is the base currency and the one on the right is called the cross currency or quote. The base currency is always assumed to be one unit, and the quoted price is what the base currency is equal to in the other currency. In this example, 1 Euro = 1.1837 $US.
+The currency on the left is the base currency and the one on the right is called the cross currency or quote. The base currency is always assumed to be one unit, and the quoted price is what the base currency is equal to in the other currency. In this example, 1 Euro = 1.1837 USD.
 
-Triangular arbitrage takes advantage 
+Triangular arbitrage takes advantage of pricing inequalities across three different currencies to make a profit. One currency is exchanged for a second, the second for a third currency, and finally the third back to the original currency. For example, if the exchange rates for the following currency pairs were:
+<p align="center">EUR/USD 1.1837</p>
+<p align="center">EUR/GBP 0.7231</p>
+<p align="center">GBP/USD 1.6388</p>
+A trader could use 11,847 USD to buy 10,000 Euros.  Those Euros could be sold for 7231 British Pounds, which could then be sold for 11,850 USD, netting a profit of 13 USD.
 
 ===
 
