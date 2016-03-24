@@ -3,6 +3,7 @@
 ###Spring 2016
 
 ####Members: Graham Gobieski, Kevin Kwan, Ziyi Zhu, Shang Liu
+#####UNIs: gsg2120, kjk2150, zz2374, sl3881
 
 ===
 
@@ -52,7 +53,7 @@ Our group hopes to implement a Forex arbitrage calculator on an FPGA using a par
 
 ![image](design_overview.png =400x)
 
-###2.1 Indentification of Arbitrage
+###2.1 Identification of Arbitrage
 Triangular arbitrage opportunities arise when a cycle is determined such that the edge weights satisfy the following expression:
 
 ->**w<sub>1</sub> * w<sub>2</sub> * w<sub>3</sub> * … * w<sub>n</sub> > 1**<-
@@ -102,6 +103,25 @@ More specifically, we plan to interface with the internet and the CSV files with
 ===
 
 ##4. Graph Storage
+
+There are two standard ways to store a graph: an adjacency list and and an adjaceny matrix. We choose the second format because it is easier represented on the FPGA using a large two-dimensional vector. In addition the Bellman-Ford algorithm is just as capable at processing an adjacency matrix as it is an adjacency list.
+
+Specifically speaking, there are several pieces of information that must be stored. The weights of edges between vertex *i* and vertex *j* denoted w(i, j) will be stored in the adjacency matrix. Additionally the predecessor, denoted p(i), and the weight, denoted w(i), must be stored for each vertex. These values will be stored in a large one-dimensional vector in which the index will correspond to the vertex.
+
+Using rough calculations we estimate the total memory usage in the following way:
+
+-> **V = 66 nodes** <-
+
+-> **Edges = 66<sup>2</sup> = 4356 edges **<-
+
+-> **Total Bits = (66 nodes) * 2 * (7 bits/node index) + (4356 edges) * (10 bits/weight of edge) ** <-
+
+-> **+ (66 nodes) * [(10 bits/weight of vertex) + (7 bits/predecessor of vertex)] = 45606 bits ~ 5.7kb** <-
+
+####Figure 4.1 Graph Storage
+
+![image](graph_storage.png =400x)
+
 
 ===
 
