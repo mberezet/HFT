@@ -9,6 +9,8 @@
 ##Table of Index
 1. Background
 2. Design Overview
+	- 2.1 Identification of Arbitrage
+	- 2.2 Pipeline 
 3. Data and Communication
 	- 3.1 Raw Data
 	- 3.2 Preprocesing and Floating-Point Approximation
@@ -17,8 +19,13 @@
 	- 3.3 Communication
 4. Graph Storage
 5. Bellman-Ford Algorithm
+	- 5.1 Bellman-Ford Algorithm
+	- 5.2 Bellman-Ford on FPGA
 6. Decision-Making
 7. Milestones
+	- 7.1 Milestone 1 (March 31st)
+	- 7.2 Milestone 2 (April 12th)
+	- 7.3 Milestone 3 (April 26th) 
 8. References
 
 ##1. Background
@@ -41,15 +48,28 @@ Our group hopes to implement a Forex arbitrage calculator on an FPGA using a par
 
 ![image](design_overview.png =400x)
 
-To find arbitrage opportunities, we will use the Bellman-Ford algorithm with edge weights transformed such that
-<p align="center">w’= ln(w)</p>
-We are looking for graph cycles where the product of edge weights is greater than 1
-<p align="center">w<sub>1</sub> * w<sub>2</sub> * w<sub>3</sub> * … * w<sub>n</sub> > 1</p>
-Taking the log of both sides results in
-<p align="center">log(w<sub>1</sub>) + log(w<sub>2</sub>) + log(w<sub>3</sub>) + … + log(w<sub>n</sub>) > 0</p>
-Then we take the negative log, resulting in a sign flip
-<p align="center">log(w<sub>1</sub>) + log(w<sub>2</sub>) + log(w<sub>3</sub>) + … + log(w<sub>n</sub>) < 0</p>
-Now we are looking for any negative cycles that appear. This is easily done with the Bellman-Ford algorithm, which detects negative cycles (see Algorithm 6.1).  
+###2.1 Indentification of Arbitrage
+Triangular arbitrage opportunities arise when a cycle is determined such that the edge weights satisfy the following expression:
+
+->**w<sub>1</sub> * w<sub>2</sub> * w<sub>3</sub> * … * w<sub>n</sub> > 1**<-
+
+However, cycles that adhere to the above requirement are particulary difficult to find in graphs. Instead we must transform the edge weights of the graph so that standard graph algorithms can be used. First we take the logarithm of both sides, such that:
+
+->**log(w<sub>1</sub>) + log(w<sub>2</sub>) + log(w<sub>3</sub>) + … + log(w<sub>n</sub>) > 0**<-
+
+If instead we take the negative log, this results in a sign flip:
+
+->**log(w<sub>1</sub>) + log(w<sub>2</sub>) + log(w<sub>3</sub>) + … + log(w<sub>n</sub>) < 0**<-
+
+Thus, if we look for negative weight cycles using the logarithm of the edge weights, we will find cycles that satisfy the requirements outlined above. Luckily, the Bellman-Ford algorithm is a standard graph algorithm that can be used to easily detect negative weight cycles in O(VE) time. Please see Algorithm 5.1 for further discussion.  
+
+###2.2 Pipeline
+Generally speaking, in order to identify arbitrage opportunities we process raw Forex time-series data in four main steps (please see Figure 2.1 for a visual representation of that explained below).
+
+1. First on the ARM CPU we process a CSV file of historical data, take negative logarithm of the closing rates, and round result the nearest integer.
+2. Then we stream the data over the AMBA bus to an update module which is responsible for updating the internal representation of the graph. We choose to represent that graph in adjacency matrix format as a two-dimensional vector of integers. In addition there is also a one dimensional vector of integers that represents the weights of each vertex.
+3. After the graph has been updated, the modules associated with the Bellman-Ford algorithm are started. First each edge is processed in the comparator and relaxation modules. Once all edges have been processed the shortest path from a source to each vertex is known. Additionally, it is a trivial task forthe cycle detector module to loop through all of the edges again and check for a negative weight cycle.
+4. If a negative weight cycle is found, the decision-making module will display the cycle on screen and show trades required to take advantage of the arbitrage opportunity.
 
 ===
 
@@ -73,6 +93,8 @@ Once the logarithm has been taken we will convert the resulting floating point t
 ###3.3 Communication
 After preprocessing we will stream the data via the Amba bus to the FPGA using a custom memory-mappied I/O device driver like we did Lab 3. The integers that we will stream will be fixed at 16 bits, and we hope to stream as fast as possible with minimum delay so that we can effectively simulate reality. Initially, the data will be wholly historical, but if time permits we hope to stream live data to the FPGA.
 
+More specifically, we plan to interface with the internet and the CSV files with Python and then call C functions that will communicate (via memory-mapped I/O operations) to the FPGA.
+
 ===
 
 ##4. Graph Storage
@@ -80,8 +102,8 @@ After preprocessing we will stream the data via the Amba bus to the FPGA using a
 ===
 
 ##5. Bellman-Ford Algorithm
-
-####Algorithm 6.1: Standard Bellman-Ford
+###5.1 Bellman-Ford Algorithm
+####Algorithm 5.1: Standard Bellman-Ford
 - Let *G(V, E)* be a graph with vertices, *V*, and edges, *E*.
 - Let *w(x)* denote the weight of vertex *x*.
 - Let *w(i, j)* denote the weight of the edge from source vertex *i* to destination vertex *j*.
@@ -112,9 +134,15 @@ for each edge(i, j) in E do
 	end if
 end for
 ```
+The Bellman-Ford algorthm is a standard graph algorithm that seeks to solve the single-source shortest path problem. Mainly this problem describes the situation in which a source node is selected and the shortest paths to every other node in the graph need to be determined. In unit graphs, breath first search may be used, but in graphs that have non-unit edge weights the Bellman-Ford algorthm must be used.
+
+Briefly, in the Bellman-Ford algorithm "each vertex maintains the weight of the shortest path from the source vertex to itself and the vertex which precedes it in the shortest path. In each iteration, all edges are relaxed [w(i) + w(i, j) < w(j)] and the weight of each vertex is updated if necessary. After the ith iteration, the algorithm finds all shorest paths consisting of at most i edges." After all shortest paths have been identified, the algorithm loops through all of the edges and looks for edges that can further decrease the value of the shortest path. If this case then a negative weight cycle has been found since a path can have at most v-1 edges. Proof of correctness can be found in *Introduction to Algorithms* by Cormen, Leiserson, Rivest, and Stein.
+
+###5.2 Bellman-Ford on FPGA
 ####Figure 5.1: Bellman-Ford on FPGA
 
 ![image](bellman_ford.png =800x)
+
 
 ####Algorithm 5.2: Comparator
 
@@ -158,9 +186,30 @@ When a negative cycle is detected by the Bellman-Ford algorithm outlined in the 
 ===
 
 ##7. Milestones
+###7.1 Milestone 1 (March 31st)
+- Python interface for CSV files containing historic Forex data
+- Static storage of graph on FPGA
+- Comparator Module
+- Relaxation Module
 
+
+###7.2 Milestone 2 (April 12th)
+- Tested Bellman-Ford algorithm
+- Kernel module that implements memory-mapped I/O ioctl call
+- Start VGA-display support
+
+###7.3 Milestone 3 (April 26th)
+- All components of implementation talking to each other (i.e. python frontend => C frontent => custom kernel module => FPGA => update module => comparator module => relaxation module => decision module)
+- Full VGA-display support so we can visualize the cycles
+- Realtime data streamed from the internet
 
 ===
 
 ##8. References
+1. Fundamental-reading about high frequency trading [https://en.wikipedia.org/wiki/High-frequency_trading](https://en.wikipedia.org/wiki/High-frequency_trading)
+2. Discussion of different types of arbitrage [https://en.wikipedia.org/wiki/Arbitrage](https://en.wikipedia.org/wiki/Arbitrage)
+3. Bellman-Ford implementation on FPGA. This is the work that we base our implementation upon. [Accelerating Large-Scale Single-Sorce Shortest Path on FPGA](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7284300)
+4. StackOverflow discussion that explains some of the theory behind calculating triangle arbitrage [http://stackoverflow.com/questions/2282427/interesting-problem-currency-arbitrage](http://stackoverflow.com/questions/2282427/interesting-problem-currency-arbitrage)
+
+===
 
