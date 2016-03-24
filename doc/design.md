@@ -21,6 +21,10 @@
 5. Bellman-Ford Algorithm
 	- 5.1 Bellman-Ford Algorithm
 	- 5.2 Bellman-Ford on FPGA
+		- 5.2.1 Sorting Module
+		- 5.2.2 Filter Module
+		- 5.2.3 Relaxation Module
+	- 5.3 Cycle Detection
 6. Decision-Making
 7. Milestones
 	- 7.1 Milestone 1 (March 31st)
@@ -143,6 +147,12 @@ Briefly, in the Bellman-Ford algorithm "each vertex maintains the weight of the 
 
 ![image](bellman_ford.png =800x)
 
+The implementation of the Bellman-Ford algorithm on FPGA that we propose is wholly based on the work in "Accelerating Large-Scale Single-Source Shortest Path on FPGA." However, instead of using off-chip DRAM as was done in the paper, we will simplify the algorithm by using onboard SRAM.
+
+The implementation is composed of three main modules, two of which (sorting module and the relaxation module) are taken from the text. Together the modules can process up to four edges at once, although this can be extended to further parallel implementations.
+
+####5.2.1 Sort Module
+The sorting module implements a static version of biotonic sort to determine which of the four edges loaded are valid candidates for relaxation. A high-order bit is reserved as an update signal bit that is toggled on and off by the sorting module to signify which edges are valid candidates. The module determines the validity of each edge by using a comparator module with pseudocode given in Algorithm 5.2. The comparator module compares two edges at time making a distinction between two cases: if the edges have the same destination vertex then the edge with the least weight and coming from the least-weighted vertex is considered the valid candidate; otherwise if the edges do not have the same destination vertex, both edges are considered valid unless one or both have low update signals.
 
 ####Algorithm 5.2: Comparator
 
@@ -177,6 +187,14 @@ else
 	
 ```
 
+####5.2.2 Filter Module
+The filter module looks at the update signals of each of the four edges in consideration and determines how many relaxation modules need to be utilized to determine which paths needs to be updated. A high update signal means that the edge is a valdi candidate, a low update signal means that the edge is no longer a candidate. Note that each destination vertex will have only one valid edge candidate at the end of this process, such that updating the adjacency matrix becomes an atomic operation.
+
+####5.2.3 Relaxation Module
+This module compares the weight calculated from the valid edge candidate path to the current weight of the destination vertex. If the weight is less then the weight of the vertex in the list stored of vertex weights, the value is updated, otherwise nothing occurs and algorithm continues.
+
+###5.3 Cycle Detection
+Once all edges have been processed (in (Total Edges/Number of Edges Processed in Parallel) cycles), the cycle detector module can take over and run a loop in parallel that looks for edges that decrease the weight of shortest paths calculated. Once an edge of this sort is found it can be passed to the decision-making module.
 
 ===
 
@@ -208,7 +226,7 @@ When a negative cycle is detected by the Bellman-Ford algorithm outlined in the 
 ##8. References
 1. Fundamental-reading about high frequency trading [https://en.wikipedia.org/wiki/High-frequency_trading](https://en.wikipedia.org/wiki/High-frequency_trading)
 2. Discussion of different types of arbitrage [https://en.wikipedia.org/wiki/Arbitrage](https://en.wikipedia.org/wiki/Arbitrage)
-3. Bellman-Ford implementation on FPGA. This is the work that we base our implementation upon. [Accelerating Large-Scale Single-Sorce Shortest Path on FPGA](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7284300)
+3. Bellman-Ford implementation on FPGA. This is the work that we base our implementation upon. [Accelerating Large-Scale Single-Source Shortest Path on FPGA](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7284300)
 4. StackOverflow discussion that explains some of the theory behind calculating triangle arbitrage [http://stackoverflow.com/questions/2282427/interesting-problem-currency-arbitrage](http://stackoverflow.com/questions/2282427/interesting-problem-currency-arbitrage)
 
 ===
