@@ -1,5 +1,5 @@
-//Comparator
+'define NODES 66
 
-module comp(input logic clk,
+module FOREX(input logic clk,
 				input logic signal,
 				input logic 
