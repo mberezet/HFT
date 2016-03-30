@@ -1,5 +1,7 @@
 *.exe
 *.o
 *.class
+*.bak
 a.out
+*/obj_dir/*
 .DS_Store
