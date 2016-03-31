@@ -1,5 +1,5 @@
 `include "Const.svh"
-
+/* verilator lint_off WIDTH */
 module Relax(input logic [31:0] vertmat [`NODES:0],
 				input logic [31:0] e1, e2, e3, e4,
 				output logic [31:0] o_vertmat [`NODES:0]);

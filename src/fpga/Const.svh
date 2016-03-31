@@ -1,1 +1,1 @@
-`define NODES 66
+`define NODES 1

@@ -1,10 +1,10 @@
 `include "Const.svh"
-
+/* verilator lint_off WIDTH */
 module Bellman(input logic clk, start,
               input logic [6:0] src,
               input logic [31:0] adjmat [`NODES:0][`NODES:0],
               output logic [31:0] o_vertmat [`NODES:0],
-              output logic done);
+              output logic [2:0] done);
 
   enum logic {RUNNING, DONE} state;
   logic [31:0] t_vertmat [`NODES:0];
