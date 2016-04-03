@@ -7,18 +7,25 @@
 
 #define INT_WIDTH 32
 #define INDEX_WIDTH 7
-#define WEIGHT_WIDTH 17
-#define NODES 2
-#define CYCLES 500
+#define WEIGHT_WIDTH 31
+#define NODES 4
+#define CYCLES 101
+#define PRINT_CYCLE 10
 
-int make_edge(unsigned int src, unsigned int dest, signed int weight);
-unsigned int reduce_signed_int_width(unsigned int val, int width);
+int make_edge(signed int weight);
+unsigned int reduce_signed_int_width(signed int val, int width);
+int extend_signed_int_width(unsigned int val, unsigned int width);
+unsigned int lower_half_int(int in, int bits);
+unsigned int upper_half_int(int in, int bits);
+std::string binary_to_string(int in);
 
 int main(int argc, char **argv, char **env) {
   int i, j;
   int clk;
-  unsigned int graph[NODES][NODES] = {{make_edge(0, 0, 0), make_edge(0, 1, 40)},
-                                      {make_edge(0, 1, -30), make_edge(1, 1, 0)}};
+  unsigned int graph[NODES][NODES] = {{make_edge(0), make_edge(4), make_edge(3), make_edge(0)},
+                                      {make_edge(0), make_edge(0), make_edge(0), make_edge(4)},
+                                      {make_edge(0), make_edge(0), make_edge(0), make_edge(6)},
+                                      {make_edge(0), make_edge(0), make_edge(0), make_edge(0)}};
   Verilated::commandArgs(argc, argv);
   // init top verilog instance
   VBellman* top = new VBellman;
@@ -30,12 +37,13 @@ int main(int argc, char **argv, char **env) {
   // initialize simulation inputs
   top->clk = 1;
   top->src = 1;
-  for (j = 0; j < NODES; j++) {
+  top->reset = 1;
+  for (i = 0; i < NODES; i++) {
     for (j = 0; j < NODES; j++) {
       top->adjmat[i][j] = graph[i][j];
     }
   }
-  std::cout << "RUNNING SIM\n";
+  std::cout << "\nRUNNING SIM\n";
   // run simulation for 500 clock periods
   for (i=0; i<CYCLES; i++) {
     // dump variables into VCD file and toggle clock
@@ -44,10 +52,14 @@ int main(int argc, char **argv, char **env) {
       top->clk = !top->clk;
       top->eval ();
     }
-    if (i % 100 == 0) { //Print every 100 clock periods
+    top->reset = 0;
+    if (i % PRINT_CYCLE == 0) { //Print every 100 clock periods
       std::cout << "Period " << i << " -------------\n";
+      std::cout << "Test" << " : "<< binary_to_string((int)top->test) << "\n";
       for (j = 0; j < NODES; j++) {
-        std::cout << "Vert " << j << " : "<< (int)top->o_vertmat[j] << "\n";
+        unsigned int lower_half = lower_half_int((unsigned int)top->vertmat[j], 25);
+        unsigned int upper_half = upper_half_int((unsigned int)top->vertmat[j], 7);
+        std::cout << "Vert " << j << " [Pred: " << upper_half << ", Weight: " << extend_signed_int_width(lower_half, 25) << "]\n";
       }
     }
     if (Verilated::gotFinish())  exit(0);
@@ -56,18 +68,41 @@ int main(int argc, char **argv, char **env) {
   exit(0);
 }
 
-int make_edge(unsigned int src, unsigned int dest, signed int weight){
+int make_edge(signed int weight) {
   int i = 0;
-  src <<= (INT_WIDTH - INDEX_WIDTH)-1;
-  dest <<= (INT_WIDTH - INDEX_WIDTH * 2)-1;
   weight = reduce_signed_int_width(weight, WEIGHT_WIDTH);
-  std::string binary = std::bitset<32>(src + dest + weight).to_string();
-  std::cout << "Edge: " << binary << "\n";
-  return src + dest + weight;
+  return (1 << INT_WIDTH - 1) + weight;
 }
 
-unsigned int reduce_signed_int_width(unsigned int val, int width) {
+unsigned int reduce_signed_int_width(signed int val, int width) {
     unsigned int l_mask = (0x01u << width) - 1;
     val &= l_mask;
     return val;
+}
+
+int extend_signed_int_width(unsigned int val, unsigned int width) {
+  int i;
+  int mask = ~0;
+  int tmp = val >> width-1;
+  if ((tmp & 1) == 0) return val;
+  mask <<= width;
+  return val | mask;
+}
+
+std::string binary_to_string(int in) {
+  std::string binary = std::bitset<32>(in).to_string();
+  return binary;
+}
+
+unsigned int lower_half_int(int in, int bits) {
+  int i;
+  int mask = 0;
+  for(i = 0; i < bits; i++) {
+    mask |= 1;
+    if (i < bits - 1) mask <<= 1;
+  }
+  return in & mask;
+}
+unsigned int upper_half_int(int in, int bits) {
+  return (unsigned int)in >> (INT_WIDTH-bits);
 }
