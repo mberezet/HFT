@@ -45,4 +45,11 @@ set_global_assignment -name LAST_QUARTUS_VERSION 13.1
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (VHDL)"
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
-set_global_assignment -name SYSTEMVERILOG_FILE /user3/spring16/kjk2150/embedded/project/HFT/code/FOREX.sv
+set_global_assignment -name VERILOG_INCLUDE_FILE Const.vh
+set_global_assignment -name SYSTEMVERILOG_FILE AdjMat.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FOREX.sv
+set_global_assignment -name SYSTEMVERILOG_FILE Update.sv
+set_global_assignment -name SYSTEMVERILOG_FILE VertMat.sv
+set_global_assignment -name SYSTEMVERILOG_FILE Container.sv
+set_global_assignment -name SYSTEMVERILOG_FILE CycleDetect.sv
+set_global_assignment -name SYSTEMVERILOG_FILE Bellman.sv
