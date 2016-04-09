@@ -51,7 +51,7 @@ module CycleDetect(input logic clk, cycle_reset,
           end
           READ_CYCLE: begin
             l <= vertmat[l][(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)]; //Pred of vert
-            o_vertmat[l][`PRED_WIDTH:0] <= l;
+            o_vertmat[l][`PRED_WIDTH:0] <= vertmat[l][(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)];
             if (l == k) begin //Read Cycle
               if (j+1 == `NODES && i+1 == `NODES) begin
                 state <= DONE; //All finished looping through edges
