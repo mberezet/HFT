@@ -1,6 +1,5 @@
 `include "Const.svh"
-/* verilator lint_off WIDTH */
-/* verilator lint_off UNDRIVEN */
+
 module Bellman(input logic clk, bellman_reset,
                input logic [`PRED_WIDTH:0] src,
                input logic signed [`WEIGHT_WIDTH:0] adjmat [`NODES:0][`NODES:0], //Edges are signed
@@ -28,7 +27,7 @@ module Bellman(input logic clk, bellman_reset,
           vertmat[k][`WEIGHT_WIDTH:0] <= 0;
           k <= k + 1;
         end else begin
-          vertmat[k][`WEIGHT_WIDTH:0] <= `WEIGHT_WIDTH'hffffffff; //INT MAX; THIS WILL CHANGE WITH WIDTH
+          vertmat[k][`WEIGHT_WIDTH:0] <= 32'hffffffff; //INT MAX; THIS WILL CHANGE WITH WIDTH
           k <= k + 1;
         end
       end

@@ -1,14 +1,9 @@
 `include "Const.svh"
-/* verilator lint_off WIDTH */
-/* verilator lint_off UNDRIVEN */
+
 module CycleDetect(input logic clk, cycle_reset,
-                   /*input logic [`PRED_WIDTH:0] src,*/
                    input logic signed [`WEIGHT_WIDTH:0] adjmat [`NODES:0][`NODES:0],
                    input logic [`VERT_WIDTH:0] vertmat [`NODES:0],
-                   output logic cycle_done,
-                   /*Vars for testing purposes only*/
-                   output logic [`WEIGHT_WIDTH:0] test,
-                   output logic [`VERT_WIDTH:0] o_vertmat [`NODES:0]);
+                   output logic cycle_done);
       enum logic [3:0] {READ_SOURCE, READ_DESTINATION, CHECK_CYCLE, READ_CYCLE, DONE} state;
       logic [`PRED_WIDTH:0] i, j, k, l; //Indices
       logic signed [`WEIGHT_WIDTH:0] svw, dvw; //Source Vertex Weight, Destination Vertex Weight, Signed
@@ -51,7 +46,6 @@ module CycleDetect(input logic clk, cycle_reset,
           end
           READ_CYCLE: begin
             l <= vertmat[l][(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)]; //Pred of vert
-            o_vertmat[l][`PRED_WIDTH:0] <= vertmat[l][(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)];
             if (l == k) begin //Read Cycle
               if (j+1 == `NODES && i+1 == `NODES) begin
                 state <= DONE; //All finished looping through edges
