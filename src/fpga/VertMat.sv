@@ -2,7 +2,7 @@
 // Single port RAM with single read/write address 
 `include "Const.vh"
 
-module single_port_ram 
+module VertMat
 #(parameter DATA_WIDTH=`VERT_WIDTH, parameter ADDR_WIDTH=`PRED_WIDTH)
 (
 	input [DATA_WIDTH:0] data,

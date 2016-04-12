@@ -7,4 +7,4 @@
 `define WEIGHT_WIDTH 31
 `define PRED_WIDTH 6
 
-`end
+`endif
