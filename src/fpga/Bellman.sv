@@ -10,13 +10,11 @@ module Bellman(input logic clk, bellman_reset,
    	 		   output logic [`PRED_WIDTH:0] vertmat_addr,
 				   output logic vertmat_we,
 					/*AdjMat Memory*/
-				   output logic [`WEIGHT_WIDTH:0] adjmat_data,
 				   output logic [`PRED_WIDTH:0] adjmat_row_addr,
 				   output logic [`PRED_WIDTH:0] adjmat_col_addr,
-				   output logic adjmat_we,
                output logic bellman_done);
 
-  enum logic [4:0] {SETUP, READ_SOURCE, READ_DESTINATION, WRITE_DESTINATION_PRED, WRITE_DESTINATION_WEIGHT, DONE} state;
+  enum logic [3:0] {SETUP, READ_SOURCE, READ_DESTINATION, WRITE_DESTINATION_1, WRITE_DESTINATION_2, NEXT_ITERATION, DONE} state;
   logic [`PRED_WIDTH:0] i, j, k; //Indices
   logic signed [`WEIGHT_WIDTH:0] svw, dvw; //Source Vertex Weight, Destination Vertex Weight, Signed
   logic signed [`WEIGHT_WIDTH:0] e; //Edge Weight, Signed
@@ -31,51 +29,63 @@ module Bellman(input logic clk, bellman_reset,
       j <= 0;
       k <= 0;
       bellman_done <= 0;
+		vertmat_we <= 1;
       state <= SETUP;
     end else case (state)
       SETUP: begin
         if (k == `NODES) begin
+			 k <= 0; //V-1 Iterations below
+			 vertmat_we <= 0;
+			 vertmat_addr <= i;
           state <= READ_SOURCE;
-          k <= 0; //V-1 Iterations below
         end else if (k == src) begin
-          vertmat[k][`WEIGHT_WIDTH:0] <= 0;  //<=====WRITE
+          vertmat_data[`WEIGHT_WIDTH:0] <= 0;
           k <= k + 1;
+			 vertmat_addr <= k + 1;
         end else begin
-          vertmat[k][`WEIGHT_WIDTH:0] <= 32'hffffffff; //INT MAX; THIS WILL CHANGE WITH WIDTH  //<=====WRITE
+          vertmat_data[`WEIGHT_WIDTH:0] <= 32'hffffffff; //INT MAX; THIS WILL CHANGE WITH WIDTH
           k <= k + 1;
+			 vertmat_addr <= k + 1;
         end
       end
       READ_SOURCE: begin
-        svw <= vertmat[i][`WEIGHT_WIDTH:0];  //<=====READ i
+        svw <= vertmat_q[`WEIGHT_WIDTH:0];
+		  vertmat_addr <= j;
         state <= READ_DESTINATION;
       end
       READ_DESTINATION: begin
-        dvw <= vertmat[j][`WEIGHT_WIDTH:0];  //<=====READ j
-        state <= WRITE_DESTINATION_PRED;
+        dvw <= vertmat_q[`WEIGHT_WIDTH:0];
+		  vertmat_we <= 1;
+        state <= WRITE_DESTINATION_1;
       end
-      WRITE_DESTINATION_PRED: begin
-        if (e != 0 && $signed(svw[`WEIGHT_WIDTH:0]) + e < $signed(dvw[`WEIGHT_WIDTH:0])) begin
-          vertmat[j][(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)] <= i;  //<=====WRITE
-        end
-        state <= WRITE_DESTINATION_WEIGHT;
-      end
-      WRITE_DESTINATION_WEIGHT: begin
+      WRITE_DESTINATION_1: begin
         if (e != 0 && $signed(svw[`WEIGHT_WIDTH:0] + e) < $signed(dvw[`WEIGHT_WIDTH:0])) begin
-          vertmat[j][`WEIGHT_WIDTH:0] <= svw[`WEIGHT_WIDTH:0] + e;  //<=====WRITE
-        end
-        if (j+1 == `NODES && i+1 == `NODES && k + 1 == `NODES - 1) begin //V-1 Times
+          vertmat_we <= 1;
+			 state <= WRITE_DESTINATION_2;
+        end else state <= NEXT_ITERATION;
+		end
+		WRITE_DESTINATION_2: begin
+			vertmat_data <= {i, svw[`WEIGHT_WIDTH:0] + e}; 
+			state <= NEXT_ITERATION;
+		end
+		NEXT_ITERATION: begin
+		  vertmat_we <= 0;
+        if (j + 1 == `NODES && i + 1 == `NODES && k + 1 == `NODES - 1) begin //V-1 Times
           state <= DONE;
-        end else if (j+1 == `NODES && i+1 == `NODES) begin
+        end else if (j + 1 == `NODES && i + 1 == `NODES) begin
           i <= 0;
           j <= 0;
           k <= k + 1;
+			 vertmat_addr <= 0;
           state <= READ_SOURCE;
-        end else if (j+1 == `NODES) begin
+        end else if (j + 1 == `NODES) begin
           i <= i + 1;
           j <= 0;
+			 vertmat_addr <= i + 1;
           state <= READ_SOURCE;
         end else begin
           j <= j + 1;
+			 vertmat_addr <= i;
           state <= READ_SOURCE;
         end
       end
