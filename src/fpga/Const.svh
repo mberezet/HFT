@@ -1,4 +1,4 @@
-`define NODES 6
+`define NODES 4
 /*1 less than width*/
 `define VERT_WIDTH 39
 `define WEIGHT_WIDTH 31
