@@ -1,7 +1,7 @@
 // megafunction wizard: %RAM: 1-PORT%
 // GENERATION: STANDARD
 // VERSION: WM1.0
-// MODULE: altsyncram 
+// MODULE: altsyncram
 
 // ============================================================
 // File Name: character.v
@@ -19,17 +19,17 @@
 
 
 //Copyright (C) 1991-2013 Altera Corporation
-//Your use of Altera Corporation's design tools, logic functions 
-//and other software and tools, and its AMPP partner logic 
-//functions, and any output files from any of the foregoing 
-//(including device programming or simulation files), and any 
-//associated documentation or information are expressly subject 
-//to the terms and conditions of the Altera Program License 
-//Subscription Agreement, Altera MegaCore Function License 
-//Agreement, or other applicable license agreement, including, 
-//without limitation, that your use is for the sole purpose of 
-//programming logic devices manufactured by Altera and sold by 
-//Altera or its authorized distributors.  Please refer to the 
+//Your use of Altera Corporation's design tools, logic functions
+//and other software and tools, and its AMPP partner logic
+//functions, and any output files from any of the foregoing
+//(including device programming or simulation files), and any
+//associated documentation or information are expressly subject
+//to the terms and conditions of the Altera Program License
+//Subscription Agreement, Altera MegaCore Function License
+//Agreement, or other applicable license agreement, including,
+//without limitation, that your use is for the sole purpose of
+//programming logic devices manufactured by Altera and sold by
+//Altera or its authorized distributors.  Please refer to the
 //applicable agreement for further details.
 
 
@@ -43,11 +43,11 @@ module character (
 	wren,
 	q);
 
-	input	[13:0]  address;
-	input	  clock;
-	input	[23:0]  data;
-	input	  wren;
-	output	[23:0]  q;
+	input address;
+	input	clk;
+	input data;
+	input	wren;
+	output q;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_off
 `endif
@@ -56,8 +56,8 @@ module character (
 // synopsys translate_on
 `endif
 
-	wire [23:0] sub_wire0;
-	wire [23:0] q = sub_wire0[23:0];
+	wire sub_wire0;
+	wire q = sub_wire0;
 
 	altsyncram	altsyncram_component (
 				.address_a (address),
@@ -97,7 +97,7 @@ module character (
 		altsyncram_component.power_up_uninitialized = "FALSE",
 		altsyncram_component.read_during_write_mode_port_a = "NEW_DATA_NO_NBE_READ",
 		altsyncram_component.widthad_a = 14,
-		altsyncram_component.width_a = 24,
+		altsyncram_component.width_a = 1,
 		altsyncram_component.width_byteena_a = 1;
 
 
