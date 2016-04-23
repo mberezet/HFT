@@ -28,9 +28,10 @@ module FOREX(input logic clk,
 		logic frame_we;
 		
 		logic container_done;
+		logic container_reset;
 		
 		Frame buffer(.x(frame_x), .y(frame_y), .char(frame_char), .we(frame_we), .*);
-		Container container(.reset(0), .done(container_done), .*);
+		Container container(.reset(container_reset), .done(container_done), .*);
 		
 		always_ff @(posedge clk) begin
 			if (reset) state <= RESET; 
