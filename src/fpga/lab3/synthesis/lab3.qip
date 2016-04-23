@@ -2,7 +2,7 @@ set_global_assignment -entity "lab3" -library "lab3" -name IP_TOOL_NAME "Qsys"
 set_global_assignment -entity "lab3" -library "lab3" -name IP_TOOL_VERSION "13.1.1"
 set_global_assignment -entity "lab3" -library "lab3" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -library "lab3" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../lab3.sopcinfo"]
-set_global_assignment -entity "lab3" -library "lab3" -name SLD_INFO "QSYS_NAME lab3 HAS_SOPCINFO 1 GENERATION_ID 1460832148"
+set_global_assignment -entity "lab3" -library "lab3" -name SLD_INFO "QSYS_NAME lab3 HAS_SOPCINFO 1 GENERATION_ID 1461442355"
 set_global_assignment -library "lab3" -name MISC_FILE [file join $::quartus(qip_path) "../../lab3.cmp"]
 set_global_assignment -library "lab3" -name SLD_FILE [file join $::quartus(qip_path) "lab3.regmap"]
 set_global_assignment -library "lab3" -name MISC_FILE [file join $::quartus(qip_path) "lab3_hps_0_hps.svd"]
@@ -101,9 +101,15 @@ set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::qua
 set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_axi_master_ni.sv"]
 set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_slave_translator.sv"]
 set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_master_translator.sv"]
-set_global_assignment -library "lab3" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/character.v"]
-set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/VGA_LED.sv"]
-set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/VGA_LED_Emulator.sv"]
+set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/Frame.sv"]
+set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/AdjMat.sv"]
+set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/Bellman.sv"]
+set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/VertMat.sv"]
+set_global_assignment -library "lab3" -name SOURCE_FILE [file join $::quartus(qip_path) "submodules/Const.vh"]
+set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/Container.sv"]
+set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/CycleDetect.sv"]
+set_global_assignment -library "lab3" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/FOREX.sv"]
+set_global_assignment -library "lab3" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/Character.v"]
 set_global_assignment -library "lab3" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/lab3_master_0.v"]
 set_global_assignment -library "lab3" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/lab3_master_0_p2b_adapter.v"]
 set_global_assignment -library "lab3" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/lab3_master_0_b2p_adapter.v"]

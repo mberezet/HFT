@@ -7,7 +7,7 @@
 module Frame(input logic clk, reset,
              input logic [5:0] x, y,
              input logic [4:0] char,
-             input logic wen,
+             input logic we,
              output logic [7:0] VGA_R, VGA_G, VGA_B,
              output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_n, VGA_SYNC_n);
 
@@ -93,14 +93,14 @@ module Frame(input logic clk, reset,
 
     assign wp = 40 * y + x;
     assign rp = 40 * vcount[9:4] + hcount[10:5];
-    assign {VGA_R, VGA_G, VGA_B} = char_show ? 24'hff0000 : 24'd0;
+    assign {VGA_R, VGA_G, VGA_B} = char_show && num_char != 0 ? 24'hff0000 : 24'd0;
     assign num_char = frame_buffer[rp];
-    assign char_addr = (hcound[10:1] - hcount[10:5] * 16) + (vcount[9:0] - vcount[9:4] * 16) * 16) + (num_char - 1) * 256; //Simplify
+    assign char_addr = (hcount[10:1] - hcount[10:5] * 16) + (vcount[9:0] - vcount[9:4] * 16) * 16 + (num_char - 1) * 256; //Simplify
 
-    Character character(.addr(char_addr), .q(char_show), .*);
+    Character character(.address(char_addr),.clock(clk),.q(char_show));
 
-    always_ff @(posedge x or posedge y or posedge char) begin
-      if(wen) frame_buffer[wp] <= char;
+    always_ff @(clk) begin
+      if (we) frame_buffer[wp] <= char;
     end
 
 endmodule // VGA_LED_Emulator

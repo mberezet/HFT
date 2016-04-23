@@ -2,20 +2,20 @@
 
 module Bellman(input logic clk, bellman_reset,
                input logic [`PRED_WIDTH:0] src,
-    					 /*Vertmat/Adjmat Read Inputs*/
-    					 input logic [`VERT_WIDTH:0] vertmat_q_a,
+    				/*Vertmat/Adjmat Read Inputs*/
+    				input logic [`VERT_WIDTH:0] vertmat_q_a,
                input logic [`VERT_WIDTH:0] vertmat_q_b,
-    					 input logic [`WEIGHT_WIDTH:0] adjmat_q,
-    					 /*VertMat Memory*/
-    					 output logic [`VERT_WIDTH:0] vertmat_data_a,
+    				input logic [`WEIGHT_WIDTH:0] adjmat_q,
+    				/*VertMat Memory*/
+					output logic [`VERT_WIDTH:0] vertmat_data_a,
                output logic [`VERT_WIDTH:0] vertmat_data_b,
-       	 		   output logic [`PRED_WIDTH:0] vertmat_addr_a,
+       	 		output logic [`PRED_WIDTH:0] vertmat_addr_a,
                output logic [`PRED_WIDTH:0] vertmat_addr_b,
-    				   output logic vertmat_we_a,
+    				output logic vertmat_we_a,
                output logic vertmat_we_b,
-    					 /*AdjMat Memory*/
-    				   output logic [`PRED_WIDTH:0] adjmat_row_addr,
-    				   output logic [`PRED_WIDTH:0] adjmat_col_addr,
+					/*AdjMat Memory*/
+    				output logic [`PRED_WIDTH:0] adjmat_row_addr,
+    				output logic [`PRED_WIDTH:0] adjmat_col_addr,
                output logic bellman_done);
 
   enum logic [3:0] {SETUP, READ, WRITE, DONE} state;
@@ -43,15 +43,15 @@ module Bellman(input logic clk, bellman_reset,
     end else case (state)
       SETUP: begin
         if (k == `NODES) begin
-			    k <= 0; //V-1 Iterations below
-			    vertmat_we_a <= 0;
+			 k <= 0; //V-1 Iterations below
+			 vertmat_we_a <= 0;
           vertmat_we_b <= 0;
           state <= WRITE;
         end else if (k == src) begin
-          vertmat_data[`WEIGHT_WIDTH:0] <= 0;
+          vertmat_data_a[`WEIGHT_WIDTH:0] <= 0;
           k <= k + 1;
         end else begin
-          vertmat_data[`WEIGHT_WIDTH:0] <= 32'hffffffff; //INT MAX; THIS WILL CHANGE WITH WIDTH
+          vertmat_data_a[`WEIGHT_WIDTH:0] <= 32'hffffffff; //INT MAX; THIS WILL CHANGE WITH WIDTH
           k <= k + 1;
         end
       end

@@ -4,6 +4,7 @@ module CycleDetect(input logic clk, cycle_reset,
                    /*Vertmat/Adjmat Read Inputs*/
                    input logic [`VERT_WIDTH:0] vertmat_q_a,
                    input logic [`VERT_WIDTH:0] vertmat_q_b,
+						 input logic [`WEIGHT_WIDTH:0] adjmat_q,
                    /*VertMat Memory*/
                    output logic [`PRED_WIDTH:0] vertmat_addr_a,
                    output logic [`PRED_WIDTH:0] vertmat_addr_b,
@@ -14,7 +15,7 @@ module CycleDetect(input logic clk, cycle_reset,
                    output logic [4:0] frame_char,
                    output logic [5:0] frame_x,
                    output logic [5:0] frame_y,
-                   output logic frame_wen,
+                   output logic frame_we,
                    output logic cycle_done);
 
       enum logic [3:0] {READ, CHECK_CYCLE, READ_CYCLE, DONE} state;
@@ -36,15 +37,13 @@ module CycleDetect(input logic clk, cycle_reset,
           i <= 0;
           j <= 0;
           k <= 0;
-          l <= 0;
           cycle_done <= 0;
-			    vertmat_addr <= 0;
           state <= CHECK_CYCLE;
         end else case (state)
           READ: begin
-            if (j+1 == `NODES && i + 1 == `NODES) begin
+            if (j + 1 == `NODES && i + 1 == `NODES) begin
               state <= DONE; //All finished looping through edges
-            end else if (j+1 == `NODES) begin
+            end else if (j + 1 == `NODES) begin
               i <= i + 1;
               j <= 0;
               state <= CHECK_CYCLE;
@@ -61,7 +60,7 @@ module CycleDetect(input logic clk, cycle_reset,
           end
           READ_CYCLE: begin
             if (l == k) begin //Read Cycle
-              state <= READ_SOURCE;
+              state <= READ;
             end
           end
           DONE: cycle_done <= 1;

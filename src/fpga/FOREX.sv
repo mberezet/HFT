@@ -4,36 +4,56 @@
  * Stephen A. Edwards
  * Columbia University
  */
+`include "Const.vh"
 
 module FOREX(input logic clk,
-			       input logic reset,
-			       input logic [7:0] writedata,
-			       input logic write,
-			       input chipselect,
-			       input logic [2:0] address,
+				 input logic reset,
+				 input logic [`WEIGHT_WIDTH:0] writedata,
+				 input logic write,
+				 input chipselect,
+				 input logic [2:0] address,
 
-			       output logic [7:0] VGA_R, VGA_G, VGA_B,
-			       output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_n,
-			       output logic VGA_SYNC_n);
+				 output logic [7:0] VGA_R, VGA_G, VGA_B,
+				 output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_n,
+				 output logic VGA_SYNC_n);
 
+		enum logic [3:0] {RESET, CONTAINER} state;
+		
+		logic [`PRED_WIDTH:0] src;
+	   logic [`PRED_WIDTH:0] u_src;
+	   logic [`PRED_WIDTH:0] u_dst;
+	   logic [`WEIGHT_WIDTH:0] u_e;
 		logic [5:0] frame_x, frame_y;
 		logic [4:0] frame_char;
-		logic frame_wen;
-		Frame buffer(.x(frame_x), .y(frame_y), .char(frame_char), .wen(frame_wen), .*);
-		Container container(.src(0), .reset(0), .*);
-		/*always_ff @(posedge clk)
-		 if (reset) begin
-
-		 end else if (chipselect && write)
-		   case (address)
-				 3'h0 : ;
-				 3'h1 : ;
-				 3'h2 : ;
-				 3'h3 : ;
-				 3'h4 : ;
-				 3'h5 : ;
-				 3'h6 : ;
-				 3'h7 : ;
-		   endcase*/
+		logic frame_we;
+		
+		logic container_done;
+		
+		Frame buffer(.x(frame_x), .y(frame_y), .char(frame_char), .we(frame_we), .*);
+		Container container(.reset(0), .done(container_done), .*);
+		
+		always_ff @(posedge clk) begin
+			if (reset) state <= RESET; 
+			else if (chipselect && write) begin
+				case (address)
+					 3'd0 : begin //Write new source and dest
+						u_src <= writedata[2 * `PRED_WIDTH + 1:`PRED_WIDTH + 1];
+						u_dst <= writedata[`PRED_WIDTH:0];
+					 end
+					 3'd1 : u_e <= writedata;
+					 default: ;
+				endcase
+			end
+			case(state) 
+				RESET: begin
+					container_reset <= 1;
+				end
+				CONTAINER: begin
+					container_reset <= 0;
+					if (container_done) state <= RESET;
+				end
+				default: state <= RESET;
+			endcase
+		end
 
 endmodule
