@@ -10,6 +10,11 @@ module CycleDetect(input logic clk, cycle_reset,
                    /*AdjMat Memory*/
                    output logic [`PRED_WIDTH:0] adjmat_row_addr,
                    output logic [`PRED_WIDTH:0] adjmat_col_addr,
+                   /*Screen*/
+                   output logic [4:0] frame_char,
+                   output logic [5:0] frame_x,
+                   output logic [5:0] frame_y,
+                   output logic frame_wen,
                    output logic cycle_done);
 
       enum logic [3:0] {READ, CHECK_CYCLE, READ_CYCLE, DONE} state;

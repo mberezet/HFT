@@ -7,22 +7,22 @@
 module Frame(input logic clk, reset,
              input logic [5:0] x, y,
              input logic [4:0] char,
-             input logic [23:0] color,
+             input logic wen,
              output logic [7:0] VGA_R, VGA_G, VGA_B,
              output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_n, VGA_SYNC_n);
 
-/*
- * 640 X 480 VGA timing for a 50 MHz clock: one pixel every other cycle
- *
- * HCOUNT 1599 0             1279       1599 0
- *             _______________              ________
- * ___________|    Video      |____________|  Video
- *
- *
- * |SYNC| BP |<-- HACTIVE -->|FP|SYNC| BP |<-- HACTIVE
- *       _______________________      _____________
- * |____|       VGA_HS          |____|
- */
+    /*
+    * 640 X 480 VGA timing for a 50 MHz clock: one pixel every other cycle
+    *
+    * HCOUNT 1599 0             1279       1599 0
+    *             _______________              ________
+    * ___________|    Video      |____________|  Video
+    *
+    *
+    * |SYNC| BP |<-- HACTIVE -->|FP|SYNC| BP |<-- HACTIVE
+    *       _______________________      _____________
+    * |____|       VGA_HS          |____|
+    */
    // Parameters for hcount
    parameter HACTIVE      = 11'd 1280,
              HFRONT_PORCH = 11'd 32,
@@ -83,22 +83,24 @@ module Frame(input logic clk, reset,
     assign VGA_CLK = hcount[0]; // 25 MHz clock: pixel latched on rising edge
 
     /* Logic required for drawing characters*/
-    logic [10:0] write_p;
-    logic [10:0] read_p;
+    logic [10:0] wp;
+    logic [10:0] rp;
+    logic [5:0] num_char;
     logic [4:0] frame_buffer[1199:0]; //40 accross by 30 down
 
     logic [13:0] char_addr;
     logic char_show;
 
+    assign wp = 40 * y + x;
+    assign rp = 40 * vcount[9:4] + hcount[10:5];
+    assign {VGA_R, VGA_G, VGA_B} = char_show ? 24'hff0000 : 24'd0;
+    assign num_char = frame_buffer[rp];
+    assign char_addr = (hcound[10:1] - hcount[10:5] * 16) + (vcount[9:0] - vcount[9:4] * 16) * 16) + (num_char - 1) * 256; //Simplify
+
     Character character(.addr(char_addr), .q(char_show), .*);
 
-    assign write_p = 40 * y + x;
-    assign read_p = 40 * vcount[9:4] + hcount[10:5];
-    assign {VGA_R, VGA_G, VGA_B} = char_show ? color : 24'd0;
-    assign char_addr = 0;
-
     always_ff @(posedge x or posedge y or posedge char) begin
-      frame_buffer[x, y] <= char;
+      if(wen) frame_buffer[wp] <= char;
     end
 
 endmodule // VGA_LED_Emulator

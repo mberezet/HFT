@@ -2,6 +2,10 @@
 
 module Container(input logic clk, reset,
                  input logic [`PRED_WIDTH:0] src,
+                 output logic [4:0] frame_char,
+                 output logic [5:0] frame_x,
+                 output logic [5:0] frame_y,
+                 output logic frame_wen,
                  output logic done);
 
   enum logic [2:0] {RUN_BELLMAN, RUN_CYCLE_DETECT, DONE} state;

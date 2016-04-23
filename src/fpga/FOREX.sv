@@ -16,13 +16,11 @@ module FOREX(input logic clk,
 			       output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_n,
 			       output logic VGA_SYNC_n);
 
-		logic [5:0] x, y;
-		x = 1;
-		y = 1;
-		logic [4:0] char = 5'd1;
-		logic [23:0] color = 24'hff0000;
-		Frame buffer(.*);
-
+		logic [5:0] frame_x, frame_y;
+		logic [4:0] frame_char;
+		logic frame_wen;
+		Frame buffer(.x(frame_x), .y(frame_y), .char(frame_char), .wen(frame_wen), .*);
+		Container container(.src(0), .reset(0), .*);
 		/*always_ff @(posedge clk)
 		 if (reset) begin
 
