@@ -24,9 +24,6 @@ module CycleDetect(input logic clk, cycle_reset,
       logic signed [`WEIGHT_WIDTH:0] svw, dvw; //Source Vertex Weight, Destination Vertex Weight, Signed
       logic signed [`WEIGHT_WIDTH:0] e; //Edge Weight, Signed
 
-      /*This is temporary testing things*/
-      logic [5:0] px, py;
-
   		assign adjmat_row_addr = i;
   		assign adjmat_col_addr = j;
   		assign e = adjmat_q;
@@ -35,7 +32,12 @@ module CycleDetect(input logic clk, cycle_reset,
       assign vertmat_addr_a = i;
       assign vertmat_addr_b = state == CHECK_CYCLE ? l : j;
       assign l = vertmat_q_b[(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)];
+
+      /*This is temporary testing things*/
+      logic [5:0] px, py;
       assign frame_char = l;
+      assign frame_x = px;
+      assign frame_y = py;
 
       always_ff @(posedge clk) begin
         if (cycle_reset) begin
