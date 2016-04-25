@@ -18,23 +18,23 @@ module FOREX(input logic clk,
 				 output logic VGA_SYNC_n);
 
 		enum logic [3:0] {RESET, CONTAINER} state;
-		
+
 		logic [`PRED_WIDTH:0] src;
-	   logic [`PRED_WIDTH:0] u_src;
-	   logic [`PRED_WIDTH:0] u_dst;
-	   logic [`WEIGHT_WIDTH:0] u_e;
+	  logic [`PRED_WIDTH:0] u_src;
+	  logic [`PRED_WIDTH:0] u_dst;
+	  logic [`WEIGHT_WIDTH:0] u_e;
 		logic [5:0] frame_x, frame_y;
 		logic [4:0] frame_char;
 		logic frame_we;
-		
+
 		logic container_done;
 		logic container_reset;
-		
+
 		Frame buffer(.x(frame_x), .y(frame_y), .char(frame_char), .we(frame_we), .*);
 		Container container(.reset(container_reset), .done(container_done), .*);
-		
+
 		always_ff @(posedge clk) begin
-			if (reset) state <= RESET; 
+			if (reset) state <= RESET;
 			else if (chipselect && write) begin
 				case (address)
 					 3'd0 : begin //Write new source and dest
@@ -45,7 +45,7 @@ module FOREX(input logic clk,
 					 default: ;
 				endcase
 			end
-			case(state) 
+			case(state)
 				RESET: begin
 					container_reset <= 1;
 				end

@@ -36,7 +36,7 @@ def main(path):
                     driver_args.w = round_int
                     driver_args.src = src
                     driver_args.dst = dst
-                    fnctl.ioct(driver_fd, termios.TIOCGPGRP, driver_args) #might need ctypes.byref
+                    fnctl.ioct(driver_fd, termios.TIOCGPGRP, ctypes.byref(driver_args)) #might need ctypes.byref
                     time.sleep(1); #Wait 1000 ms
                 finally:
                     print "All Done..."

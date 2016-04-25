@@ -11,7 +11,7 @@ module Container(input logic clk, reset,
                  output logic frame_we,
                  output logic done);
 
-  enum logic [2:0] {UPDATE, RUN_BELLMAN, RUN_CYCLE_DETECT, DONE} state;
+  enum logic [2:0] {UPDATE_FOR, UPDATE_REV RUN_BELLMAN, RUN_CYCLE_DETECT, DONE} state;
   logic bellman_done, cycle_done, bellman_reset, cycle_reset; //Reset and done registers
 
   //Memory
@@ -60,19 +60,26 @@ module Container(input logic clk, reset,
       done <= 0;
       state <= UPDATE;
     end else case (state)
-		UPDATE: begin
-			adjmat_we <= 1;
-			adjmat_row_addr <= u_src;
-			adjmat_col_addr <= u_dst;
-			adjmat_data <= u_e;
-			state <= RUN_BELLMAN;
-			bellman_reset <= 1;
-		end
+  		UPDATE_FOR: begin
+  			adjmat_we <= 1;
+  			adjmat_row_addr <= u_src;
+  			adjmat_col_addr <= u_dst;
+  			adjmat_data <= u_e;
+  			state <= UPDATE_REV;
+  		end
+      UPDATE_REV: begin
+        adjmat_we <= 1;
+        adjmat_row_addr <= u_dst;
+        adjmat_col_addr <= u_src;
+        adjmat_data <= -1*u_e;
+        state <= RUN_BELLMAN;
+        bellman_reset <= 1;
+      end
       RUN_BELLMAN: begin
-		  adjmat_we <= 0;
+		    adjmat_we <= 0;
         bellman_reset <= 0;
-		  adjmat_row_addr <= bellman_adjmat_row_addr;
-		  adjmat_col_addr <= bellman_adjmat_col_addr;
+		    adjmat_row_addr <= bellman_adjmat_row_addr;
+		    adjmat_col_addr <= bellman_adjmat_col_addr;
         if (bellman_done) begin
           cycle_reset <= 1;
           state <= RUN_CYCLE_DETECT;
@@ -80,8 +87,8 @@ module Container(input logic clk, reset,
       end
       RUN_CYCLE_DETECT: begin
         cycle_reset <= 0;
-		  adjmat_row_addr <= cycle_adjmat_row_addr;
-		  adjmat_col_addr <= cycle_adjmat_col_addr;
+		    adjmat_row_addr <= cycle_adjmat_row_addr;
+		    adjmat_col_addr <= cycle_adjmat_col_addr;
         if (cycle_done) state <= DONE;
       end
       DONE: done <= 1;
