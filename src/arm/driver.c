@@ -20,7 +20,7 @@
 #include <asm/io.h>
 
 #include "driver.h"
-#include "socal/hps.h"
+#include "hps.h"
 #include "hps_0.h"
 
 /* Memory region visible through the lightweight HPS-FPGA bridge */

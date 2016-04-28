@@ -10,7 +10,10 @@ else
 	KERNEL_SOURCE := /usr/src/linux
         PWD := $(shell pwd)
 
-default: module hello
+default: module driver 
+
+#module:
+#	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
 module:
 	${MAKE} -C ${KERNEL_SOURCE} SUBDIRS=${PWD} modules
