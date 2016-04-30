@@ -38,9 +38,10 @@ static void *driver_registers; /* Start of registers for drivers */
 
 /* Low-level write routine: digit assumed to be in range; remember the state */
 static void write_edge(int w, unsigned int src, unsigned int dst) {
-  unsigned int combo_vert = (src << PRED_WIDTH) | dst;
+    printk(KERN_INFO "WRITING EDGE");
+    unsigned int combo_vert = (src << PRED_WIDTH) | dst;
 	iowrite32(combo_vert, driver_registers);
-  iowrite32(w, driver_registers + sizeof(int));
+    iowrite32(w, driver_registers + sizeof(int));
 }
 
 static int my_open(struct inode *i, struct file *f) {
@@ -53,13 +54,13 @@ static int my_close(struct inode *i, struct file *f) {
 
 /* Handle ioctls(): write to the display registers or read our state */
 static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg) {
-  driver_arg_t da;
+    driver_arg_t da;
+	printk(KERN_INFO "Got to ioctl");
+    if (copy_from_user(&da, (driver_arg_t *) arg, sizeof(driver_arg_t)))
+        return -EACCES;
 
-  if (copy_from_user(&da, (driver_arg_t *) arg, sizeof(driver_arg_t)))
-    return -EACCES;
-
-  write_edge(da.w, da.src, da.dst);
-  return 0;
+    write_edge(da.w, da.src, da.dst);
+    return 0;
 }
 
 static struct file_operations my_fops = {
