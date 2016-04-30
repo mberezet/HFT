@@ -10,19 +10,13 @@ else
 	KERNEL_SOURCE := /usr/src/linux
         PWD := $(shell pwd)
 
-default: module my_driver 
-
-#module:
-#	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+default: module my_driver
 
 module:
-	${MAKE} -C -L${KERNEL_SOURCE} SUBDIRS=${PWD} modules
+	${MAKE} -C ${KERNEL_SOURCE} SUBDIRS=${PWD} modules
 
 clean:
 	${MAKE} -C ${KERNEL_SOURCE} SUBDIRS=${PWD} clean
 	${RM} my_driver
 
-socfpga.dtb : socfpga.dtb
-	dtc -O dtb -o socfpga.dtb socfpga.dts
-
-endif
+endif 

@@ -1,0 +1,1 @@
+cmd_/root/HFT/src/arm/my_driver.ko := ld -EL -r  -T /usr/src/linux/scripts/module-common.lds --build-id  -o /root/HFT/src/arm/my_driver.ko /root/HFT/src/arm/my_driver.o /root/HFT/src/arm/my_driver.mod.o

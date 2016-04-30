@@ -43,7 +43,7 @@ def main(path):
                     return
 
             row += 1
-            if(row > 0) return;
+            if(row > 0): return
 
 
 
