@@ -2,7 +2,7 @@ import sys, os, time #system
 import fcntl, termios, ctypes #ioctl
 import csv, linecache #CSV
 
-DECIMAL_PLACES = 10
+DECIMAL_PLACES = 1
 DRIVER_FILE = "/dev/forex_driver"
 
 currencies = {"EUR" : 0,
@@ -42,13 +42,11 @@ def main(path):
                 print "Going to write now"
                 fcntl.ioctl(driver_fd, 0, driver_args) #check for ref or not
                 time.sleep(1) #Wait 1000 ms
-            finally:
-                if (row < 20) : print "All Done..."
-                else : print "ERROR!"
-                return
+            except:
+                print error
 
-            row = row + 1
-            if(row > 0): return
+        row = row + 1
+        if(row > 0): return
 
 if __name__ == "__main__":
     if (len(sys.argv) == 2):
