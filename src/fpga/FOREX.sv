@@ -14,6 +14,8 @@ module FOREX(input logic clk,
 				 input logic [2:0] address,
 
 				 //output [4:0] frame_char, //TESTING PURPOSES ONLY
+				 //output logic [31:0] test, //For testing purposes only
+
 				 output logic [7:0] VGA_R, VGA_G, VGA_B,
 				 output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_n,
 				 output logic VGA_SYNC_n);
@@ -31,7 +33,7 @@ module FOREX(input logic clk,
 		logic container_done;
 		logic container_reset;
 
-		Frame buffer(.x(frame_x), .y(frame_y), .char(frame_char), .we(frame_we), .*);
+		//Frame buffer(.x(frame_x), .y(frame_y), .char(frame_char), .we(frame_we), .*);
 		Container container(.*);
 
 		always_ff @(posedge clk) begin

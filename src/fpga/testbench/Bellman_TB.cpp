@@ -11,7 +11,7 @@
 #define WEIGHT_WIDTH 32
 
 #define NODES 3
-#define CYCLES 501
+#define CYCLES 701
 #define PRINT_CYCLE 50
 
 int extend_signed_int_width(unsigned int val, unsigned int width);
@@ -47,7 +47,7 @@ int main(int argc, char **argv, char **env) {
     top->reset = 0;
     if (old_char != (int)top->frame_char/*i % PRINT_CYCLE == 0 && i > 235 && i < CYCLES*/) { //Print every 100 clock periods
       std::cout << "Period " << i << " -------------\n";
-      std::cout << "Char: " << (int)top->frame_char<< "\n";
+      std::cout << "Char: " << (int)top->frame_char << " Test: " << (int)top->test << "\n";
       old_char = (int)top->frame_char;
     }
     top->write = 0;

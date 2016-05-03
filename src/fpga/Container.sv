@@ -9,6 +9,9 @@ module Container(input logic clk, container_reset,
                  output logic [5:0] frame_x,
                  output logic [5:0] frame_y,
                  output logic frame_we,
+
+                 //output logic [31:0] test, //For testing purposes only
+
                  output logic container_done);
 
   enum logic [3:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, RUN_CYCLE_DETECT, DONE} state;
