@@ -13,8 +13,8 @@ module FOREX(input logic clk,
 				 input chipselect,
 				 input logic [2:0] address,
 
-				 //output [4:0] frame_char, //TESTING PURPOSES ONLY
-				 //output logic [31:0] test, //For testing purposes only
+				 output [4:0] frame_char, //TESTING PURPOSES ONLY
+				 output logic [31:0] test, //For testing purposes only
 
 				 output logic [7:0] VGA_R, VGA_G, VGA_B,
 				 output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_n,
@@ -27,7 +27,7 @@ module FOREX(input logic clk,
 	  logic [`PRED_WIDTH:0] u_dst;
 	  logic [`WEIGHT_WIDTH:0] u_e;
 		logic [5:0] frame_x, frame_y;
-		logic [4:0] frame_char;
+		//logic [4:0] frame_char;
 		logic frame_we;
 
 		logic container_done;

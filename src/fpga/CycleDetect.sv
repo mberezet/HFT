@@ -12,7 +12,7 @@ module CycleDetect(input logic clk, cycle_reset,
                    output logic [`PRED_WIDTH:0] adjmat_row_addr,
                    output logic [`PRED_WIDTH:0] adjmat_col_addr,
 
-                   //output logic [31:0] test, //For testing purposes only
+                   output logic [31:0] test, //For testing purposes only
 
                    /*Screen*/
                    /*This is temporary testing things*/
@@ -51,7 +51,7 @@ module CycleDetect(input logic clk, cycle_reset,
           state <= CHECK_CYCLE;
         end else case (state)
           READ: begin
-            //test <= 0;
+            test <= 0;
             if (j + 1 == `NODES && i + 1 == `NODES) begin
               state <= DONE; //All finished looping through edges
             end else if (j + 1 == `NODES) begin
@@ -65,7 +65,7 @@ module CycleDetect(input logic clk, cycle_reset,
           end
           CHECK_CYCLE: begin
             if (e != 0 && $signed(svw) + e < $signed(dvw)) begin //Found Negative Weight Cycle
-              //test <= 1;
+              test <= 1;
               k <= j;
               state <= READ_CYCLE;
               /*This is temporary testing things*/
