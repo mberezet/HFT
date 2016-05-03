@@ -2,35 +2,31 @@
 #include <bitset>
 #include <stdio.h>
 
-#include "VContainer.h"
+#include "VFOREX.h"
 #include "verilated.h"
 #include "verilated_vcd_c.h"
 
 #define WORD_WIDTH 32
-#define PRED_WIDTH 32
+#define PRED_WIDTH 7
 #define WEIGHT_WIDTH 32
 
-#define NODES 6
-#define CYCLES 1001
+#define NODES 3
+#define CYCLES 501
 #define PRINT_CYCLE 50
 
 int extend_signed_int_width(unsigned int val, unsigned int width);
 unsigned int lower_half_int(unsigned long in, int bits);
 unsigned int upper_half_int(unsigned long in, int bits);
+unsigned int src_dst(unsigned int src, unsigned int dst);
 std::string binary_to_string(long in);
 
 int main(int argc, char **argv, char **env) {
   int i, j;
   int clk;
-  int graph[NODES][NODES] = {{0, -2, 0, 0, 0, 0},
-                             {0, 0, 0, 0, 0, 3},
-                             {0, 0, 0, -4, 0, 0},
-                             {0, 0, 0, 0, -3, 0},
-                             {0, 0, 4, 0, 0, 0},
-                             {-2, 0, 1, 0, 0, 0}};
+  int old_char = 0;
   Verilated::commandArgs(argc, argv);
   // init top verilog instance
-  VContainer* top = new VContainer;
+  VFOREX* top = new VFOREX;
   // init trace dump
   Verilated::traceEverOn(true);
   VerilatedVcdC* tfp = new VerilatedVcdC;
@@ -38,13 +34,7 @@ int main(int argc, char **argv, char **env) {
   tfp->open ("Container.vcd");
   // initialize simulation inputs
   top->clk = 1;
-  top->src = 0; //Source to start at
   top->reset = 1;
-  for (i = 0; i < NODES; i++) {
-    for (j = 0; j < NODES; j++) {
-      top->adjmat[i][j] = graph[i][j];
-    }
-  }
   std::cout << "\nRUNNING SIM\n";
   // run simulation for 500 clock periods
   for (i=0; i<CYCLES; i++) {
@@ -55,18 +45,52 @@ int main(int argc, char **argv, char **env) {
       top->eval ();
     }
     top->reset = 0;
-    if (i % PRINT_CYCLE == 0 && i > 235 && i < CYCLES) { //Print every 100 clock periods
+    if (old_char != (int)top->frame_char/*i % PRINT_CYCLE == 0 && i > 235 && i < CYCLES*/) { //Print every 100 clock periods
       std::cout << "Period " << i << " -------------\n";
-      std::cout << "Test" << " : "<< binary_to_string((int)top->test) << "\n";
-      //std::cout << "Test2" << " : "<< binary_to_string((int)top->test2) << "\n";
-      std::cout << "Done" << " : "<< (int)top->done << "\n";
-      for (j = 0; j < NODES; j++) {
-        //unsigned int lower_half = lower_half_int((long)top->vertmat[j], WEIGHT_WIDTH);
-        unsigned int upper_half = upper_half_int((unsigned long)top->vertmat[j], 0);
-        std::cout << "Vert " << j << " [Pred: " << upper_half << ", Weight: " << (int)top->vertmat[j] << "]\n";
-        std::cout << "Cycle "<< " [Pred: " << (int)top->o_vertmat[j] << "]\n";
-      }
+      std::cout << "Char: " << (int)top->frame_char<< "\n";
+      old_char = (int)top->frame_char;
     }
+    top->write = 0;
+    top->chipselect = 0;
+    switch (i) {
+      case 0:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = src_dst(1, 2);
+        top->address = 0;
+        break;
+      case 5:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = -9;
+        top->address = 1;
+        break;
+      case 200:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = src_dst(0, 1);
+        top->address = 0;
+        break;
+      case 205:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = 3;
+        top->address = 1;
+        break;
+      case 400:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = src_dst(0, 2);
+        top->address = 0;
+        break;
+      case 405:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = 2;
+        top->address = 1;
+        break;
+    }
+
     if (Verilated::gotFinish())  exit(0);
   }
   tfp->close();
@@ -98,4 +122,8 @@ unsigned int lower_half_int(unsigned long in, int bits) {
 }
 unsigned int upper_half_int(unsigned long in, int bits) {
   return (unsigned int)(in >> (WORD_WIDTH-bits));
+}
+
+unsigned int src_dst(unsigned int src, unsigned int dst){
+  return (src << PRED_WIDTH) | dst;
 }

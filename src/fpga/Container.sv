@@ -1,17 +1,17 @@
 `include "Const.vh"
 
-module Container(input logic clk, reset,
+module Container(input logic clk, container_reset,
                  input logic [`PRED_WIDTH:0] src,
-					  input logic [`PRED_WIDTH:0] u_src,
-					  input logic [`PRED_WIDTH:0] u_dst,
-					  input logic [`WEIGHT_WIDTH:0] u_e,
+					       input logic [`PRED_WIDTH:0] u_src,
+					       input logic [`PRED_WIDTH:0] u_dst,
+					       input logic [`WEIGHT_WIDTH:0] u_e,
                  output logic [4:0] frame_char,
                  output logic [5:0] frame_x,
                  output logic [5:0] frame_y,
                  output logic frame_we,
-                 output logic done);
+                 output logic container_done);
 
-  enum logic [2:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, RUN_CYCLE_DETECT, DONE} state;
+  enum logic [3:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, RUN_CYCLE_DETECT, DONE} state;
   logic bellman_done, cycle_done, bellman_reset, cycle_reset; //Reset and done registers
 
   //Memory
@@ -41,6 +41,8 @@ module Container(input logic clk, reset,
   logic [`PRED_WIDTH:0] cycle_adjmat_row_addr;
   logic [`PRED_WIDTH:0] cycle_adjmat_col_addr;
 
+  //logic [4:0] frame_char1;
+
   assign vertmat_addr_a = bellman_done ? bellman_vertmat_addr_a : cycle_vertmat_addr_a;
   assign vertmat_addr_b = bellman_done ? bellman_vertmat_addr_b : cycle_vertmat_addr_b;
 
@@ -56,12 +58,11 @@ module Container(input logic clk, reset,
 					 .we(adjmat_we), .q(adjmat_q), .*);
 
   always_ff @(posedge clk) begin
-    if (reset) begin
-      done <= 0;
+    if (container_reset) begin
+      container_done <= 0;
       state <= UPDATE_FOR;
     end else case (state)
   		UPDATE_FOR: begin
-  			adjmat_we <= 1;
   			adjmat_row_addr <= u_src;
   			adjmat_col_addr <= u_dst;
   			adjmat_data <= u_e;
@@ -91,7 +92,7 @@ module Container(input logic clk, reset,
 		    adjmat_col_addr <= cycle_adjmat_col_addr;
         if (cycle_done) state <= DONE;
       end
-      DONE: done <= 1;
+      DONE: container_done <= 1;
       default: state <= DONE;
     endcase
   end
