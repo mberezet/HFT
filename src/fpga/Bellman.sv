@@ -56,6 +56,7 @@ module Bellman(input logic clk, bellman_reset,
         end
       end
       READ: begin
+        vertmat_we_b <= 0;
         if (j + 1 == `NODES && i + 1 == `NODES && k + 1 == `NODES - 1) begin //V-1 Times
           state <= DONE;
         end else if (j + 1 == `NODES && i + 1 == `NODES) begin

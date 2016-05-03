@@ -46,8 +46,8 @@ module Container(input logic clk, container_reset,
 
   //logic [4:0] frame_char1;
 
-  assign vertmat_addr_a = bellman_done ? bellman_vertmat_addr_a : cycle_vertmat_addr_a;
-  assign vertmat_addr_b = bellman_done ? bellman_vertmat_addr_b : cycle_vertmat_addr_b;
+  assign vertmat_addr_a = !bellman_done ? bellman_vertmat_addr_a : cycle_vertmat_addr_a;
+  assign vertmat_addr_b = !bellman_done ? bellman_vertmat_addr_b : cycle_vertmat_addr_b;
 
   Bellman bellman(.vertmat_addr_a(bellman_vertmat_addr_a), .vertmat_addr_b(bellman_vertmat_addr_b),
                   .adjmat_row_addr(bellman_adjmat_row_addr), .adjmat_col_addr(bellman_adjmat_col_addr), .*);
