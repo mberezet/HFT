@@ -12,7 +12,9 @@ module CycleDetect(input logic clk, cycle_reset,
                    output logic [`PRED_WIDTH:0] adjmat_row_addr,
                    output logic [`PRED_WIDTH:0] adjmat_col_addr,
 
-                   output logic [31:0] test, //For testing purposes only
+                   //output logic [31:0] test, //For testing purposes only
+                   output logic [31:0] test1, //For testing purposes only
+                   //output logic [31:0] test2, //For testing purposes only
 
                    /*Screen*/
                    /*This is temporary testing things*/
@@ -35,6 +37,7 @@ module CycleDetect(input logic clk, cycle_reset,
       assign vertmat_addr_a = i;
       assign vertmat_addr_b = state == CHECK_CYCLE ? l : j;
       assign l = vertmat_q_b[(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)];
+      //assign test1 = vertmat_addr_b;
 
       /*This is temporary testing things*/
       logic [5:0] px, py;
@@ -48,12 +51,12 @@ module CycleDetect(input logic clk, cycle_reset,
           j <= 0;
           k <= 0;
           cycle_done <= 0;
-          state <= CHECK_CYCLE;
+          state <= READ;
+          test1 <= 8008;
         end else case (state)
           READ: begin
-            test <= 0;
             if (j + 1 == `NODES && i + 1 == `NODES) begin
-              state <= DONE; //All finished looping through edges
+              state <= DONE; //All finished looping through edges //GETS TRIGGERED SOMEHOW ON RESET
             end else if (j + 1 == `NODES) begin
               i <= i + 1;
               j <= 0;
@@ -64,8 +67,10 @@ module CycleDetect(input logic clk, cycle_reset,
             end
           end
           CHECK_CYCLE: begin
-            if (e != 0 && $signed(svw) + e < $signed(dvw)) begin //Found Negative Weight Cycle
-              test <= 1;
+            //test <= i;
+            //test1 <= j;
+            //test2 <= dvw;
+            if (e != 0 && $signed(svw + e) < $signed(dvw)) begin //Found Negative Weight Cycle
               k <= j;
               state <= READ_CYCLE;
               /*This is temporary testing things*/
@@ -94,6 +99,7 @@ module CycleDetect(input logic clk, cycle_reset,
               frame_we <= 0;
               state <= READ;
             end
+            state <= READ; //TESTING ONLY
           end
           DONE: cycle_done <= 1;
           default: state <= DONE;

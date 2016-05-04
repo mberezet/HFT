@@ -10,9 +10,9 @@
 #define PRED_WIDTH 7
 #define WEIGHT_WIDTH 32
 
-#define NODES 3
-#define CYCLES 701
-#define PRINT_CYCLE 50
+#define NODES 4
+#define CYCLES 640
+#define PRINT_CYCLE 5
 
 int extend_signed_int_width(unsigned int val, unsigned int width);
 unsigned int lower_half_int(unsigned long in, int bits);
@@ -45,10 +45,19 @@ int main(int argc, char **argv, char **env) {
       top->eval ();
     }
     top->reset = 0;
-    if (old_char != (int)top->frame_char/*i % PRINT_CYCLE == 0 && i > 235 && i < CYCLES*/) { //Print every 100 clock periods
+    if (/*old_char != (int)top->frame_char &&*/ i > 405/*i % PRINT_CYCLE == 0 && i > 235 && i < CYCLES*/) { //Print every 100 clock periods
+    //if((int)top->test) {
+    //if(i % 1 == 0 && i > 614){
+    //if((old_char || (int)top->test == 8008) && i > 615) {
       std::cout << "Period " << i << " -------------\n";
-      std::cout << "Char: " << (int)top->frame_char << " Test: " << (int)top->test << "\n";
-      old_char = (int)top->frame_char;
+      //std::cout << "Char: " << (int)top->frame_char << " " <<
+      //  (int)top->test << " => " << (int)top->test1 << " Edge: " << (int)top->test2 << "\n";
+      std::cout << "Char: " << (int)top->frame_char <<
+        " Test: "<< (int)top->test <<
+        " Test1: "<< (int)top->test1 <<
+        " Test2: " << (int)top->test2 << "\n";
+      old_char = 1;
+      int l, k;
     }
     top->write = 0;
     top->chipselect = 0;
@@ -56,22 +65,34 @@ int main(int argc, char **argv, char **env) {
       case 0:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = src_dst(1, 2);
+        top->writedata = src_dst(0, 1);
         top->address = 0;
         break;
       case 5:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = -9;
+        top->writedata = 2;
         top->address = 1;
         break;
       case 200:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = src_dst(0, 1);
+        top->writedata = src_dst(1, 2);
         top->address = 0;
         break;
       case 205:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = 1;
+        top->address = 1;
+        break;
+      case 300:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = src_dst(2, 3);
+        top->address = 0;
+        break;
+      case 305:
         top->write = 1;
         top->chipselect = 1;
         top->writedata = 3;
@@ -80,13 +101,13 @@ int main(int argc, char **argv, char **env) {
       case 400:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = src_dst(0, 2);
+        top->writedata = src_dst(3, 1);
         top->address = 0;
         break;
       case 405:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = 2;
+        top->writedata = -9;
         top->address = 1;
         break;
     }

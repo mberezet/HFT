@@ -8,7 +8,8 @@ module VertMat
 	input [DATA_WIDTH:0] data_a, data_b,
 	input [ADDR_WIDTH:0] addr_a, addr_b,
 	input we_a, we_b, clk,
-	output reg [DATA_WIDTH:0] q_a, q_b
+	output reg [DATA_WIDTH:0] q_a, q_b,
+	output logic [31:0] test
 );
 
 	// Declare the RAM variable
@@ -38,6 +39,7 @@ module VertMat
 		end
 		else
 		begin
+			//test <= ram[addr_b];
 			q_b <= ram[addr_b];
 		end
 	end

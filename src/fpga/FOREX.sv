@@ -15,6 +15,8 @@ module FOREX(input logic clk,
 
 				 output [4:0] frame_char, //TESTING PURPOSES ONLY
 				 output logic [31:0] test, //For testing purposes only
+				 output logic [31:0] test1, //For testing purposes only
+				 output logic [31:0] test2, //For testing purposes only
 
 				 output logic [7:0] VGA_R, VGA_G, VGA_B,
 				 output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_n,
@@ -22,7 +24,7 @@ module FOREX(input logic clk,
 
 		enum logic [3:0] {RESET, CONTAINER} state;
 
-		logic [`PRED_WIDTH:0] src;
+		logic [`PRED_WIDTH:0] src = 0;
 	  logic [`PRED_WIDTH:0] u_src;
 	  logic [`PRED_WIDTH:0] u_dst;
 	  logic [`WEIGHT_WIDTH:0] u_e;
@@ -37,27 +39,31 @@ module FOREX(input logic clk,
 		Container container(.*);
 
 		always_ff @(posedge clk) begin
-			if (reset) state <= RESET;
+			if (reset) ;
 			else if (chipselect && write) begin
 				case (address)
 					 3'd0 : begin //Write new source and dest
 						u_src <= writedata[2 * `PRED_WIDTH + 1:`PRED_WIDTH + 1];
 						u_dst <= writedata[`PRED_WIDTH:0];
 					 end
-					 3'd1 : u_e <= writedata;
+					 3'd1 : begin
+					 		state <= RESET;
+					 		u_e <= writedata;
+					 end
 					 default: ;
 				endcase
 			end
 			case(state)
 				RESET: begin
+					container_done <= 0;
 					container_reset <= 1;
 					state <= CONTAINER;
 				end
 				CONTAINER: begin
 					container_reset <= 0;
-					if (container_done) state <= RESET;
+					//if (container_done) state <= RESET;
 				end
-				default: state <= RESET;
+				default: ;
 			endcase
 		end
 
