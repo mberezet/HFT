@@ -58,48 +58,40 @@ module Container(input logic clk, container_reset,
 					 .we(adjmat_we), .q(adjmat_q), .*);
 
   assign test = state;
+
   always_ff @(posedge clk) begin
     if (container_reset) begin
-      container_done <= 0;
       state <= UPDATE_FOR;
     end else case (state)
   		UPDATE_FOR: begin
-        adjmat_we <= 1;
-  			adjmat_data <= u_e;
   			state <= WRITE_INTER1;
   		end
       WRITE_INTER1: state <= UPDATE_REV;
       UPDATE_REV: begin
-        //adjmat_data <= -1*u_e;
-        bellman_done <= 0;
-        bellman_reset <= 1;
         state <= WRITE_INTER2;
       end
       WRITE_INTER2: begin
-        adjmat_we <= 0;
-        bellman_reset <= 1;
         state <= RUN_BELLMAN;
       end
       RUN_BELLMAN: begin
-        bellman_reset <= 0;
         if (bellman_done) begin
-          cycle_reset <= 1;
-          cycle_done <= 0;
           state <= RUN_CYCLE_DETECT;
         end
       end
       RUN_CYCLE_DETECT: begin //ENTER THIS STATE WITHOUT RESETTING
-        cycle_reset <= 0;
         if (cycle_done) state <= DONE;
       end
-      DONE: begin container_done <= 1; end
       default: state <= DONE;
     endcase
   end
 
   always_comb begin
-    case (state)
+    if (container_reset) begin
+      container_done = 0;
+    end else case (state)
       UPDATE_FOR: begin
+        adjmat_we = 1;
+        adjmat_data = u_e;
         adjmat_row_addr = u_src;
         adjmat_col_addr = u_dst;
       end
@@ -108,23 +100,32 @@ module Container(input logic clk, container_reset,
         adjmat_col_addr = u_dst;
       end
       UPDATE_REV: begin
+        //adjmat_data <= -1*u_e;
         adjmat_row_addr = u_dst;
         adjmat_col_addr = u_src;
       end
       WRITE_INTER2: begin
+        bellman_reset = 1;
+        adjmat_we = 0;
         adjmat_row_addr = u_dst;
         adjmat_col_addr = u_src;
       end
       RUN_BELLMAN: begin
+        bellman_reset = 0;
         adjmat_row_addr = bellman_adjmat_row_addr;
         adjmat_col_addr = bellman_adjmat_col_addr;
         vertmat_addr_a = bellman_vertmat_addr_a;
         vertmat_addr_b = bellman_vertmat_addr_b;
+        if (bellman_done) begin
+          cycle_reset = 1;
+          cycle_done = 0;
+        end
         //test = bellman_vertmat_addr_a;
         //test1 = bellman_vertmat_addr_b;
         //test2 = vertmat_q_b;
       end
       RUN_CYCLE_DETECT: begin
+        cycle_reset = 0;
         adjmat_row_addr = cycle_adjmat_row_addr;
         adjmat_col_addr = cycle_adjmat_col_addr;
         vertmat_addr_a = cycle_vertmat_addr_a;
@@ -132,6 +133,7 @@ module Container(input logic clk, container_reset,
         test2 = test1;
         //test = 8;
       end
+      DONE: container_done = 1;
       default: test = 81;
     endcase
   end
