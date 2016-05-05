@@ -9,11 +9,13 @@ module AdjMat
 	input [`PRED_WIDTH:0] row_addr,
 	input [`PRED_WIDTH:0] col_addr,
 	input we, clk,
-	output [DATA_WIDTH:0] q
+	output [DATA_WIDTH:0] q,
+	output logic [31:0] test2
 );
 
 	logic [ADDR_WIDTH:0] addr;
 	assign addr = row_addr*`NODES + col_addr;
+	assign test2 = ram[1];
 
 	// Declare the RAM variable
 	reg [DATA_WIDTH:0] ram[2**ADDR_WIDTH:0];

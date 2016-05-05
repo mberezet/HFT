@@ -1,5 +1,4 @@
 `include "Const.vh"
-
 module Container(input logic clk, container_reset,
                  input logic [`PRED_WIDTH:0] src,
 					       input logic [`PRED_WIDTH:0] u_src,
@@ -16,7 +15,7 @@ module Container(input logic clk, container_reset,
 
                  output logic container_done);
 
-  enum logic [4:0] {UPDATE_FOR, WRITE_INTER1, UPDATE_REV, WRITE_INTER2, RUN_BELLMAN, RUN_CYCLE_DETECT, DONE} state;
+  enum logic [4:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, INTER, RUN_CYCLE_DETECT, DONE} state;
   logic bellman_done, cycle_done, bellman_reset, cycle_reset; //Reset and done registers
 
   //Memory
@@ -57,84 +56,70 @@ module Container(input logic clk, container_reset,
   AdjMat adjmat(.data(adjmat_data), .row_addr(adjmat_row_addr), .col_addr(adjmat_col_addr),
 					 .we(adjmat_we), .q(adjmat_q), .*);
 
-  assign test = state;
+  //assign test = state;
 
   always_ff @(posedge clk) begin
     if (container_reset) begin
       state <= UPDATE_FOR;
+      container_done <= 0;
     end else case (state)
-  		UPDATE_FOR: begin
-  			state <= WRITE_INTER1;
-  		end
-      WRITE_INTER1: state <= UPDATE_REV;
+  		UPDATE_FOR: state <= UPDATE_REV;
       UPDATE_REV: begin
-        state <= WRITE_INTER2;
-      end
-      WRITE_INTER2: begin
+        bellman_reset <= 1;
         state <= RUN_BELLMAN;
       end
       RUN_BELLMAN: begin
+        bellman_reset <= 0;
         if (bellman_done) begin
-          state <= RUN_CYCLE_DETECT;
+          cycle_reset <= 1;
+          state <= INTER;
         end
       end
-      RUN_CYCLE_DETECT: begin //ENTER THIS STATE WITHOUT RESETTING
+      INTER: state <= RUN_CYCLE_DETECT;
+      RUN_CYCLE_DETECT: begin
+        cycle_reset <= 0;
         if (cycle_done) state <= DONE;
       end
+      DONE: container_done <= 1;
       default: state <= DONE;
     endcase
   end
 
   always_comb begin
-    if (container_reset) begin
-      container_done = 0;
-    end else case (state)
+    adjmat_we = 0;
+    adjmat_data = 0;
+    adjmat_row_addr = 0;
+    adjmat_col_addr = 0;
+    adjmat_data = 0;
+    vertmat_addr_a = 0;
+    vertmat_addr_b = 0;
+    case (state)
       UPDATE_FOR: begin
         adjmat_we = 1;
         adjmat_data = u_e;
         adjmat_row_addr = u_src;
         adjmat_col_addr = u_dst;
       end
-      WRITE_INTER1: begin
-        adjmat_row_addr = u_src;
-        adjmat_col_addr = u_dst;
-      end
       UPDATE_REV: begin
-        //adjmat_data <= -1*u_e;
-        adjmat_row_addr = u_dst;
-        adjmat_col_addr = u_src;
-      end
-      WRITE_INTER2: begin
-        bellman_reset = 1;
-        adjmat_we = 0;
+        adjmat_we = 1;
+        adjmat_data = -1*u_e;
         adjmat_row_addr = u_dst;
         adjmat_col_addr = u_src;
       end
       RUN_BELLMAN: begin
-        bellman_reset = 0;
+        adjmat_we = 0;
         adjmat_row_addr = bellman_adjmat_row_addr;
         adjmat_col_addr = bellman_adjmat_col_addr;
         vertmat_addr_a = bellman_vertmat_addr_a;
         vertmat_addr_b = bellman_vertmat_addr_b;
-        if (bellman_done) begin
-          cycle_reset = 1;
-          cycle_done = 0;
-        end
-        //test = bellman_vertmat_addr_a;
-        //test1 = bellman_vertmat_addr_b;
-        //test2 = vertmat_q_b;
       end
       RUN_CYCLE_DETECT: begin
-        cycle_reset = 0;
         adjmat_row_addr = cycle_adjmat_row_addr;
         adjmat_col_addr = cycle_adjmat_col_addr;
         vertmat_addr_a = cycle_vertmat_addr_a;
         vertmat_addr_b = cycle_vertmat_addr_b;
-        test2 = test1;
-        //test = 8;
       end
-      DONE: container_done = 1;
-      default: test = 81;
+      default: ;
     endcase
   end
 

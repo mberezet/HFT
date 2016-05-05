@@ -23,7 +23,7 @@ module Bellman(input logic clk, bellman_reset,
               output logic [`PRED_WIDTH:0] adjmat_col_addr,
               output logic bellman_done);
 
-  enum logic [3:0] {SETUP, SETUP_WRITE_INTER, FINISH_SETUP, READ, WRITE, WRITE_INTER, DONE} state;
+  enum logic [3:0] {SETUP, READ, WRITE, DONE} state;
   logic [`PRED_WIDTH:0] i, j, k; //Indices
   logic signed [`WEIGHT_WIDTH:0] svw, dvw; //Source Vertex Weight, Destination Vertex Weight, Signed
   logic signed [`WEIGHT_WIDTH:0] e; //Edge Weight, Signed
@@ -37,101 +37,80 @@ module Bellman(input logic clk, bellman_reset,
   //assign test1 = vertmat_addr_b;
 
   always_comb begin
-    if (bellman_reset) begin
-      //test <= 8008;
-      i = 0;
-      j = 0;
-      k = 0;
-      bellman_done = 0;
-      vertmat_we_a = 1;
-    end else case (state)
-        SETUP: begin
-          vertmat_addr_a = k;
-          if (k + 1 == `NODES) begin
-  			    k = 0; //V Iterations below
-          end else if (k == src) begin
-            vertmat_data_a[`WEIGHT_WIDTH:0] = 0;
-            k = k + 1;
-          end else begin
-            vertmat_data_a[`WEIGHT_WIDTH:0] = 31'h777fffff; //INT MAX; THIS WILL CHANGE WITH WIDTH
-            k = k + 1;
-          end
+    vertmat_we_a = 0;
+    vertmat_addr_a = 0;
+    vertmat_data_a = 0;
+    vertmat_we_b = 0;
+    vertmat_data_b = 0;
+    case (state)
+      SETUP: begin
+        vertmat_we_a = 1;
+        vertmat_addr_a = k;
+        if (k + 1 == `NODES) ;
+        else if (k == src) begin
+          vertmat_data_a[`WEIGHT_WIDTH:0] = 0;
+        end else begin
+          vertmat_data_a[`WEIGHT_WIDTH:0] = 31'h777fffff; //INT MAX; THIS WILL CHANGE WITH WIDTH
         end
-        SETUP_WRITE_INTER: begin
-          vertmat_addr_a = k;
+      end
+      READ: begin
+        vertmat_we_b = 0;
+        vertmat_we_a = 0;
+        vertmat_addr_a = i;
+        vertmat_addr_b = j;
+      end
+      WRITE:begin
+        vertmat_addr_a = i;
+        vertmat_addr_b = j;
+        if (e != 0 && $signed(svw + e) < $signed(dvw)) begin
+          vertmat_we_b = 1;
+          vertmat_data_b = {i, $signed(svw + e)};
         end
-        FINISH_SETUP: begin
-          vertmat_we_a = 0;
-          vertmat_addr_a = k;
-        end
-        READ: begin
-          vertmat_addr_a = i;
-          vertmat_addr_b = j;
-          if (j + 1 == `NODES && i + 1 == `NODES && k + 1 == `NODES) begin //V Times
-            ;
-          end else if (j + 1 == `NODES && i + 1 == `NODES) begin
-            i = 0;
-            j = 0;
-            k = k + 1;
-          end else if (j + 1 == `NODES) begin
-            i = i + 1;
-            j = 0;
-          end else begin
-            j = j + 1;
-          end
-        end
-        WRITE:begin
-          vertmat_addr_a = i;
-          vertmat_addr_b = j;
-          if (e != 0 && $signed(svw + e) < $signed(dvw)) begin
-            //test <= 31;
-            vertmat_we_b = 1;
-            vertmat_data_b = {i, $signed(svw + e)};
-          end
-        end
-        WRITE_INTER: begin
-          vertmat_we_b = 0;
-          vertmat_addr_a = i;
-          vertmat_addr_b = j;
-        end
-        DONE: bellman_done = 1;
-      endcase
+      end
+      default: ;
+    endcase
   end
 
   always_ff @(posedge clk) begin
     if (bellman_reset) begin
+      //test <= 8008;
+      i <= 0;
+      j <= 0;
+      k <= 0;
+      bellman_done <= 0;
       state <= SETUP;
     end else case (state)
       SETUP: begin
         if (k + 1 == `NODES) begin
-          state <= FINISH_SETUP;
+			    k <= 0; //V Iterations below
+          state <= READ;
         end else if (k == src) begin
-          state <= SETUP_WRITE_INTER;
+          k <= k + 1;
+          state <= SETUP;
         end else begin
-          state <= SETUP_WRITE_INTER;
+          k <= k + 1;
+          state <= SETUP;
         end
-      end
-      SETUP_WRITE_INTER: state <= SETUP;
-      FINISH_SETUP: begin
-        state <= READ;
       end
       READ: begin
         if (j + 1 == `NODES && i + 1 == `NODES && k + 1 == `NODES) begin //V Times
           state <= DONE;
         end else if (j + 1 == `NODES && i + 1 == `NODES) begin
+          i <= 0;
+          j <= 0;
+          k <= k + 1;
           state <= WRITE;
         end else if (j + 1 == `NODES) begin
+          i <= i + 1;
+          j <= 0;
           state <= WRITE;
         end else begin
+          j <= j + 1;
           state <= WRITE;
         end
       end
-      WRITE: begin
-        state <= WRITE_INTER;
-      end
-      WRITE_INTER: begin
-        state <= READ;
-      end
+      WRITE: state <= READ;
+      DONE: bellman_done <= 1;
       default: state <= DONE;
     endcase
   end

@@ -38,31 +38,41 @@ module FOREX(input logic clk,
 		//Frame buffer(.x(frame_x), .y(frame_y), .char(frame_char), .we(frame_we), .*);
 		Container container(.*);
 
-		always_ff @(posedge clk) begin
+		always_comb begin
+			u_src = 0;
+			u_dst = 0;
+			u_e = 0;
 			if (reset) ;
 			else if (chipselect && write) begin
 				case (address)
 					 3'd0 : begin //Write new source and dest
-						u_src <= writedata[2 * `PRED_WIDTH + 1:`PRED_WIDTH + 1];
-						u_dst <= writedata[`PRED_WIDTH:0];
+						u_src = writedata[2 * `PRED_WIDTH + 1:`PRED_WIDTH + 1];
+						u_dst = writedata[`PRED_WIDTH:0];
 					 end
 					 3'd1 : begin
+					 	u_e = writedata;
+					 end
+					 default: ;
+				endcase
+			end
+		end
+
+		always_ff @(posedge clk) begin
+			if (reset) ;
+			else if (chipselect && write) begin
+				case (address)
+					 3'd1 : begin
 					 		state <= RESET;
-					 		u_e <= writedata;
 					 end
 					 default: ;
 				endcase
 			end
 			case(state)
 				RESET: begin
-					container_done <= 0;
-					container_reset <= 1;
 					state <= CONTAINER;
+					container_reset <= 1;
 				end
-				CONTAINER: begin
-					container_reset <= 0;
-					//if (container_done) state <= RESET;
-				end
+				CONTAINER: container_reset <= 0;
 				default: ;
 			endcase
 		end
