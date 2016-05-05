@@ -16,7 +16,10 @@ module Container(input logic clk, container_reset,
                  output logic container_done);
 
   enum logic [4:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, INTER, RUN_CYCLE_DETECT, DONE} state;
+  enum logic [3:0] {SETUP_BELLMAN, READ_BELLMAN, WRITE_BELLMAN, DONE_BELLMAN} state_bellman;
+  enum logic [3:0] {READ, CHECK_CYCLE, READ_CYCLE, DONE_CYCLE} state_cycle;
   logic bellman_done, cycle_done, bellman_reset, cycle_reset; //Reset and done registers
+  logic [`PRED_WIDTH:0] i, j, k; //Indices
 
   //Memory
   /*Vertmat/Adjmat Read Outputs*/
@@ -93,6 +96,8 @@ module Container(input logic clk, container_reset,
     adjmat_data = 0;
     vertmat_addr_a = 0;
     vertmat_addr_b = 0;
+	 vertmat_we_a = 0;
+	 vertmat_we_b = 0;
     case (state)
       UPDATE_FOR: begin
         adjmat_we = 1;
