@@ -12,6 +12,7 @@ module VertMat
 	output logic [31:0] test
 );
 
+	assign test = ram[2][`VERT_WIDTH:`WEIGHT_WIDTH+1];
 	// Declare the RAM variable
 	reg [DATA_WIDTH:0] ram[2**ADDR_WIDTH-1:0];
 

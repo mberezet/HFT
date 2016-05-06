@@ -11,7 +11,7 @@
 #define WEIGHT_WIDTH 32
 
 #define NODES 4
-#define CYCLES 550
+#define CYCLES 750
 #define PRINT_CYCLE 5
 
 int extend_signed_int_width(unsigned int val, unsigned int width);
@@ -45,7 +45,7 @@ int main(int argc, char **argv, char **env) {
       top->eval ();
     }
     top->reset = 0;
-    if (/*old_char != (int)top->frame_char &&*/ i > 542/*i % PRINT_CYCLE == 0 && i > 235 && i < CYCLES*/) { //Print every 100 clock periods
+    if (/*old_char != (int)top->frame_char &&*/ i > 411 && (int)top->test2 != 0/*i % PRINT_CYCLE == 0 && i > 235 && i < CYCLES*/) { //Print every 100 clock periods
     //if((int)top->test) {
     //if(i % 1 == 0 && i > 614){
     //if((old_char || (int)top->test == 8008) && i > 615) {

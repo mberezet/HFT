@@ -14,8 +14,8 @@ module Bellman(input logic clk, bellman_reset,
               output logic vertmat_we_a,
               output logic vertmat_we_b,
 
-              output logic [31:0] test, //For testing purposes only
-              output logic [31:0] test1, //For testing purposes only
+              //output logic [31:0] test, //For testing purposes only
+              //output logic [31:0] test1, //For testing purposes only
               //output logic [31:0] test2, //For testing purposes only
 
               /*AdjMat Memory*/
@@ -23,7 +23,7 @@ module Bellman(input logic clk, bellman_reset,
               output logic [`PRED_WIDTH:0] adjmat_col_addr,
               output logic bellman_done);
 
-  enum logic [3:0] {SETUP, READ, WRITE, DONE} state;
+  enum logic [3:0] {SETUP, READ, IDLE, WRITE, DONE} state;
   logic [`PRED_WIDTH:0] i, j, k; //Indices
   logic signed [`WEIGHT_WIDTH:0] svw, dvw; //Source Vertex Weight, Destination Vertex Weight, Signed
   logic signed [`WEIGHT_WIDTH:0] e; //Edge Weight, Signed
@@ -33,8 +33,6 @@ module Bellman(input logic clk, bellman_reset,
   assign e = adjmat_q;
   assign svw = vertmat_q_a[`WEIGHT_WIDTH:0];
   assign dvw = vertmat_q_b[`WEIGHT_WIDTH:0];
-  //assign test1 = j;
-  //assign test1 = vertmat_addr_b;
 
   always_comb begin
     vertmat_we_a = 0;
@@ -46,7 +44,7 @@ module Bellman(input logic clk, bellman_reset,
       SETUP: begin
         vertmat_we_a = 1;
         vertmat_addr_a = k;
-        if (k + 1 == `NODES) ;
+        if (k == `NODES) ;
         else if (k == src) begin
           vertmat_data_a[`WEIGHT_WIDTH:0] = 0;
         end else begin
@@ -54,8 +52,10 @@ module Bellman(input logic clk, bellman_reset,
         end
       end
       READ: begin
-        vertmat_we_b = 0;
-        vertmat_we_a = 0;
+        vertmat_addr_a = i;
+        vertmat_addr_b = j;
+      end
+      IDLE: begin
         vertmat_addr_a = i;
         vertmat_addr_b = j;
       end
@@ -73,7 +73,6 @@ module Bellman(input logic clk, bellman_reset,
 
   always_ff @(posedge clk) begin
     if (bellman_reset) begin
-      //test <= 8008;
       i <= 0;
       j <= 0;
       k <= 0;
@@ -83,7 +82,7 @@ module Bellman(input logic clk, bellman_reset,
       SETUP: begin
         if (k + 1 == `NODES) begin
 			    k <= 0; //V Iterations below
-          state <= READ;
+          state <= WRITE;
         end else if (k == src) begin
           k <= k + 1;
           state <= SETUP;
@@ -99,16 +98,17 @@ module Bellman(input logic clk, bellman_reset,
           i <= 0;
           j <= 0;
           k <= k + 1;
-          state <= WRITE;
+          state <= IDLE;
         end else if (j + 1 == `NODES) begin
           i <= i + 1;
           j <= 0;
-          state <= WRITE;
+          state <= IDLE;
         end else begin
           j <= j + 1;
-          state <= WRITE;
+          state <= IDLE;
         end
       end
+      IDLE: state <= WRITE;
       WRITE: state <= READ;
       DONE: bellman_done <= 1;
       default: state <= DONE;

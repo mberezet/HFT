@@ -15,7 +15,7 @@ module Container(input logic clk, container_reset,
 
                  output logic container_done);
 
-  enum logic [4:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, INTER, RUN_CYCLE_DETECT, DONE} state;
+  enum logic [4:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, RUN_CYCLE_DETECT, DONE, IDLE} state, next_state;
   logic bellman_done, cycle_done, bellman_reset, cycle_reset; //Reset and done registers
 
   //Memory
@@ -66,16 +66,18 @@ module Container(input logic clk, container_reset,
   		UPDATE_FOR: state <= UPDATE_REV;
       UPDATE_REV: begin
         bellman_reset <= 1;
-        state <= RUN_BELLMAN;
+        state <= IDLE;
+        next_state <= RUN_BELLMAN;
       end
       RUN_BELLMAN: begin
         bellman_reset <= 0;
         if (bellman_done) begin
           cycle_reset <= 1;
-          state <= INTER;
+          state <= IDLE;
+          next_state <= RUN_CYCLE_DETECT;
         end
       end
-      INTER: state <= RUN_CYCLE_DETECT;
+      IDLE: state <= next_state;
       RUN_CYCLE_DETECT: begin
         cycle_reset <= 0;
         if (cycle_done) state <= DONE;
@@ -102,7 +104,7 @@ module Container(input logic clk, container_reset,
       end
       UPDATE_REV: begin
         adjmat_we = 1;
-        adjmat_data = -1*u_e;
+        adjmat_data = 0;//-1*u_e;
         adjmat_row_addr = u_dst;
         adjmat_col_addr = u_src;
       end
