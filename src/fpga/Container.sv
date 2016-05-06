@@ -8,11 +8,6 @@ module Container(input logic clk, container_reset,
                  output logic [5:0] frame_x,
                  output logic [5:0] frame_y,
                  output logic frame_we,
-
-                 output logic [31:0] test, //For testing purposes only
-                 output logic [31:0] test1, //For testing purposes only
-                 output logic [31:0] test2, //For testing purposes only
-
                  output logic container_done);
 
   enum logic [4:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, RUN_CYCLE_DETECT, DONE, IDLE} state, next_state;
@@ -55,8 +50,6 @@ module Container(input logic clk, container_reset,
                   .q_a(vertmat_q_a), .q_b(vertmat_q_b), .*);
   AdjMat adjmat(.data(adjmat_data), .row_addr(adjmat_row_addr), .col_addr(adjmat_col_addr),
 					 .we(adjmat_we), .q(adjmat_q), .*);
-
-  //assign test = state;
 
   always_ff @(posedge clk) begin
     if (container_reset) begin

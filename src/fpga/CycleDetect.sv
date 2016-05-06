@@ -12,10 +12,6 @@ module CycleDetect(input logic clk, cycle_reset,
                    output logic [`PRED_WIDTH:0] adjmat_row_addr,
                    output logic [`PRED_WIDTH:0] adjmat_col_addr,
 
-                   //output logic [31:0] test, //For testing purposes only
-                   output logic [31:0] test1, //For testing purposes only
-                   output logic [31:0] test2, //For testing purposes only
-
                    /*Screen*/
                    /*This is temporary testing things*/
                    output logic [4:0] frame_char,
@@ -43,7 +39,6 @@ module CycleDetect(input logic clk, cycle_reset,
       assign frame_x = px;
       assign frame_y = py;
 
-      assign test2 = frame_we;
       always_comb begin
         frame_we = 0;
         vertmat_addr_b = 0;
