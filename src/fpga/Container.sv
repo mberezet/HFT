@@ -15,8 +15,9 @@ module Container(input logic clk, container_reset,
 
                  output logic container_done);
 
-  enum logic [4:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, INTER, RUN_CYCLE_DETECT, DONE
-							BELLMAN_SETUP, BELLMAN_READ, BELLMAN_WRITE, BELLMAN_DONE} state;
+  enum logic [4:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, INTER, RUN_CYCLE_DETECT, DONE,
+							BELLMAN_SETUP, BELLMAN_READ, BELLMAN_WRITE, BELLMAN_DONE,
+							CYCLE_LOOK, CHECK_CYCLE, CYCLE_READ} state;
   //enum logic [3:0] {SETUP_BELLMAN, READ_BELLMAN, WRITE_BELLMAN, DONE_BELLMAN} state_bellman;
   //enum logic [3:0] {READ, CHECK_CYCLE, READ_CYCLE, DONE_CYCLE} state_cycle;
   logic bellman_done, cycle_done, bellman_reset, cycle_reset; //Reset and done registers
@@ -117,15 +118,59 @@ module Container(input logic clk, container_reset,
 		end
 		BELLMAN_WRITE: state <= BELLMAN_READ;
 		BELLMAN_DONE: begin
-			cycle_reset <= 1;
+			//cycle_reset <= 1;
 			state <= INTER;
 		end
       INTER: state <= RUN_CYCLE_DETECT;
       RUN_CYCLE_DETECT: begin
-        cycle_reset <= 0;
-        if (cycle_done) state <= DONE;
-      end
-      DONE: container_done <= 1;
+        //cycle_reset <= 0;
+		  i <= 0;
+        j <= 0;
+        k <= 0;
+        cycle_done <= 0;
+        state <= CYCLE_READ;
+		CYCLE_LOOK: begin
+			if (j + 1 == `NODES && i + 1 == `NODES) begin
+				state <= DONE; //All finished looping through edges //GETS TRIGGERED SOMEHOW ON RESET
+            end else if (j + 1 == `NODES) begin
+              i <= i + 1;
+              j <= 0;
+              state <= CHECK_CYCLE;
+            end else begin
+              j <= j + 1;
+              state <= CHECK_CYCLE;
+				end
+		end
+		CHECK_CYCLE: begin
+			if (e != 0 && $signed(svw + e) < $signed(dvw)) begin //Found Negative Weight Cycle
+				k <= j;
+            state <= READ_CYCLE;
+            /*This is temporary testing things*/
+            if (px + 1 == 40 && py + 1 == 30) begin
+              py <= 0;
+              px <= 0;
+            end else if (px + 1 == 40) begin
+              py <= py + 1;
+              px <= 0;
+            end else px <= px + 1;
+         end else state <= CYCLE_LOOK;
+		end
+		READ_CYCLE: begin
+			if (px + 1 == 40 && py + 1 == 30) begin
+				py <= 0;
+            px <= 0;
+         end else if (px + 1 == 40) begin
+            py <= py + 1;
+            px <= 0;
+         end else px <= px + 1;
+
+         if (l == k) begin //Read Cycle
+         /*This is temporary testing things*/
+				state <= CYCLE_LOOK;
+         end
+         state <= CYCLE_LOOK; //TESTING ONLY
+		end
+		DONE: container_done <= 1;
       default: state <= DONE;
     endcase
   end
@@ -193,6 +238,13 @@ module Container(input logic clk, container_reset,
         vertmat_addr_a = cycle_vertmat_addr_a;
         vertmat_addr_b = cycle_vertmat_addr_b;
       end
+		CHECK_CYCLE: begin
+			if (e != 0 && $signed(svw + e) < $signed(dvw)) begin //Found Negative Weight Cycle
+				/*This is temporary testing things*/
+            frame_we = 1;
+         end
+		end
+		READ_CYCLE: if (l == k) frame_we = 0;
       default: ;
     endcase
   end
