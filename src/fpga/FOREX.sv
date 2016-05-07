@@ -25,7 +25,7 @@ module FOREX(input logic clk,
 	  logic [`PRED_WIDTH:0] u_dst;
 	  logic [`WEIGHT_WIDTH:0] u_e;
 		logic [5:0] frame_x, frame_y;
-		//logic [4:0] frame_char;
+		//logic [5:0] frame_char;
 		//logic frame_we;
 
 		logic container_done;

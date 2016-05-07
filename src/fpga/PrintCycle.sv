@@ -12,7 +12,7 @@ module PrintCycle(input logic clk, print_reset,
                    output logic frame_we,
                    output logic print_done);
 
-    enum logic [3:0] {READ, IDLE, START_WRITE, FIRST_DIGIT, SECOND_DIGIT, ARROW, CHECK_CYCLE, FINISH_CYCLE, DONE} state;
+    enum logic [3:0] {READ, IDLE, CHECK_CYCLE, START_WRITE, FIRST_DIGIT, SECOND_DIGIT, ARROW, RECHECK_CYCLE, FINISH_CYCLE, DONE} state;
 
     logic [`PRED_WIDTH:0] i, j, k, l, m; //Indices
 
@@ -29,6 +29,10 @@ module PrintCycle(input logic clk, print_reset,
       case (state)
         READ: ;
         IDLE: ;
+        CHECK_CYCLE: begin
+          vertmat_addr_b = j;
+          if (vertmat_q_b[`VERT_WIDTH]) vertmat_addr_b = l;
+        end
         START_WRITE: begin
           frame_we = 1;
           frame_char = 0;
@@ -66,7 +70,7 @@ module PrintCycle(input logic clk, print_reset,
             frame_char = 37;
           end
         end
-        CHECK_CYCLE: vertmat_addr_b = l;
+        RECHECK_CYCLE: vertmat_addr_b = l;
         default: ;
       endcase
     end
@@ -93,6 +97,9 @@ module PrintCycle(input logic clk, print_reset,
         IDLE: begin
           k <= j;
           m <= j;
+          state <= CHECK_CYCLE;
+        end
+        CHECK_CYCLE: begin
           l <= vertmat_q_b[(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)];
           if (vertmat_q_b[`VERT_WIDTH]) state <= START_WRITE;
           else state <= READ;
@@ -137,7 +144,7 @@ module PrintCycle(input logic clk, print_reset,
           end else px <= px + 1;
           state <= CHECK_CYCLE;
         end
-        CHECK_CYCLE: begin
+        RECHECK_CYCLE: begin
           m <= l;
           if (l == k) state <= READ;
           else begin

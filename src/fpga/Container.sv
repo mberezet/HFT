@@ -109,6 +109,8 @@ module Container(input logic clk, container_reset,
     adjmat_data = 0;
     vertmat_addr_a = 0;
     vertmat_addr_b = 0;
+    vertmat_data_b = 0;
+    vertmat_we_b = 0;
     case (state)
       UPDATE_FOR: begin
         adjmat_we = 1;
