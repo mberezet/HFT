@@ -11,7 +11,7 @@
 #define WEIGHT_WIDTH 32
 
 #define NODES 4
-#define CYCLES 750
+#define CYCLES 1200
 #define PRINT_CYCLE 5
 
 int extend_signed_int_width(unsigned int val, unsigned int width);
@@ -45,19 +45,9 @@ int main(int argc, char **argv, char **env) {
       top->eval ();
     }
     top->reset = 0;
-    if (/*old_char != (int)top->frame_char &&*/ i > 411 && (int)top->test2 != 0/*i % PRINT_CYCLE == 0 && i > 235 && i < CYCLES*/) { //Print every 100 clock periods
-    //if((int)top->test) {
-    //if(i % 1 == 0 && i > 614){
-    //if((old_char || (int)top->test == 8008) && i > 615) {
-      std::cout << "Period " << i << " -------------\n";
-      //std::cout << "Char: " << (int)top->frame_char << " " <<
-      //  (int)top->test << " => " << (int)top->test1 << " Edge: " << (int)top->test2 << "\n";
-      std::cout << "Char: " << (int)top->frame_char <<
-        " Test: "<< (int)top->test <<
-        " Test1: "<< (int)top->test1 <<
-        " Test2: " << (int)top->test2 << "\n";
-      old_char = 1;
-      int l, k;
+
+    if((int)top->frame_we == 1){
+      std::cout << "Char: " << (int)top->frame_char << "\n";
     }
     top->write = 0;
     top->chipselect = 0;
@@ -71,7 +61,7 @@ int main(int argc, char **argv, char **env) {
       case 5:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = 2;
+        top->writedata = 4;
         top->address = 1;
         break;
       case 200:
@@ -83,7 +73,7 @@ int main(int argc, char **argv, char **env) {
       case 205:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = 1;
+        top->writedata = 3;
         top->address = 1;
         break;
       case 300:
@@ -95,16 +85,28 @@ int main(int argc, char **argv, char **env) {
       case 305:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = 3;
+        top->writedata = 4;
         top->address = 1;
         break;
       case 400:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = src_dst(3, 1);
+        top->writedata = src_dst(3, 4);
         top->address = 0;
         break;
       case 405:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = -7;
+        top->address = 1;
+        break;
+      case 500:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = src_dst(4, 1);
+        top->address = 0;
+        break;
+      case 505:
         top->write = 1;
         top->chipselect = 1;
         top->writedata = -9;

@@ -4,14 +4,14 @@ module Container(input logic clk, container_reset,
 					       input logic [`PRED_WIDTH:0] u_src,
 					       input logic [`PRED_WIDTH:0] u_dst,
 					       input logic [`WEIGHT_WIDTH:0] u_e,
-                 output logic [4:0] frame_char,
+                 output logic [5:0] frame_char,
                  output logic [5:0] frame_x,
                  output logic [5:0] frame_y,
                  output logic frame_we,
                  output logic container_done);
 
-  enum logic [4:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, RUN_CYCLE_DETECT, DONE, IDLE} state, next_state;
-  logic bellman_done, cycle_done, bellman_reset, cycle_reset; //Reset and done registers
+  enum logic [4:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, RUN_CYCLE_DETECT, RUN_PRINT_CYCLE, DONE, IDLE} state, next_state;
+  logic bellman_done, cycle_done, bellman_reset, cycle_reset, print_reset, print_done; //Reset and done registers
 
   //Memory
   /*Vertmat/Adjmat Read Outputs*/
@@ -35,15 +35,28 @@ module Container(input logic clk, container_reset,
   logic [`PRED_WIDTH:0] bellman_vertmat_addr_b;
   logic [`PRED_WIDTH:0] bellman_adjmat_row_addr;
   logic [`PRED_WIDTH:0] bellman_adjmat_col_addr;
+  logic [`VERT_WIDTH:0] bellman_vertmat_data_b;
+  logic bellman_vertmat_we_b;
+
   logic [`PRED_WIDTH:0] cycle_vertmat_addr_a;
   logic [`PRED_WIDTH:0] cycle_vertmat_addr_b;
   logic [`PRED_WIDTH:0] cycle_adjmat_row_addr;
   logic [`PRED_WIDTH:0] cycle_adjmat_col_addr;
+  logic [`VERT_WIDTH:0] cycle_vertmat_data_b;
+  logic cycle_vertmat_we_b;
+
+  logic [`PRED_WIDTH:0] print_vertmat_addr_b;
+  logic [`VERT_WIDTH:0] print_vertmat_data_b;
+  logic print_vertmat_we_b;
 
   Bellman bellman(.vertmat_addr_a(bellman_vertmat_addr_a), .vertmat_addr_b(bellman_vertmat_addr_b),
+                  .vertmat_data_b(bellman_vertmat_data_b), .vertmat_we_b(bellman_vertmat_we_b),
                   .adjmat_row_addr(bellman_adjmat_row_addr), .adjmat_col_addr(bellman_adjmat_col_addr), .*);
   CycleDetect cycle_detect(.vertmat_addr_a(cycle_vertmat_addr_a), .vertmat_addr_b(cycle_vertmat_addr_b),
+                          .vertmat_data_b(cycle_vertmat_data_b), .vertmat_we_b(cycle_vertmat_we_b),
                           .adjmat_row_addr(cycle_adjmat_row_addr), .adjmat_col_addr(cycle_adjmat_col_addr), .*);
+  PrintCycle print_cycle(.vertmat_addr_b(print_vertmat_addr_b), .vertmat_data_b(print_vertmat_data_b),
+                          .vertmat_we_b(print_vertmat_we_b),.*);
   VertMat vertmat(.data_a(vertmat_data_a), .data_b(vertmat_data_b),
                   .addr_a(vertmat_addr_a), .addr_b(vertmat_addr_b),
                   .we_a(vertmat_we_a), .we_b(vertmat_we_b),
@@ -73,7 +86,15 @@ module Container(input logic clk, container_reset,
       IDLE: state <= next_state;
       RUN_CYCLE_DETECT: begin
         cycle_reset <= 0;
-        if (cycle_done) state <= DONE;
+        if (cycle_done) begin
+          print_reset <= 1;
+          next_state <= RUN_PRINT_CYCLE;
+          state <= IDLE;
+        end
+      end
+      RUN_PRINT_CYCLE: begin
+        print_reset <= 0;
+        if (print_done) state <= DONE;
       end
       DONE: container_done <= 1;
       default: state <= DONE;
@@ -107,12 +128,21 @@ module Container(input logic clk, container_reset,
         adjmat_col_addr = bellman_adjmat_col_addr;
         vertmat_addr_a = bellman_vertmat_addr_a;
         vertmat_addr_b = bellman_vertmat_addr_b;
+        vertmat_data_b = bellman_vertmat_data_b;
+        vertmat_we_b = bellman_vertmat_we_b;
       end
       RUN_CYCLE_DETECT: begin
         adjmat_row_addr = cycle_adjmat_row_addr;
         adjmat_col_addr = cycle_adjmat_col_addr;
         vertmat_addr_a = cycle_vertmat_addr_a;
         vertmat_addr_b = cycle_vertmat_addr_b;
+        vertmat_data_b = cycle_vertmat_data_b;
+        vertmat_we_b = cycle_vertmat_we_b;
+      end
+      RUN_PRINT_CYCLE: begin
+        vertmat_addr_b = print_vertmat_addr_b;
+        vertmat_data_b = print_vertmat_data_b;
+        vertmat_we_b = print_vertmat_we_b;
       end
       default: ;
     endcase

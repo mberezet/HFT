@@ -14,10 +14,6 @@ module Bellman(input logic clk, bellman_reset,
               output logic vertmat_we_a,
               output logic vertmat_we_b,
 
-              //output logic [31:0] test, //For testing purposes only
-              //output logic [31:0] test1, //For testing purposes only
-              //output logic [31:0] test2, //For testing purposes only
-
               /*AdjMat Memory*/
               output logic [`PRED_WIDTH:0] adjmat_row_addr,
               output logic [`PRED_WIDTH:0] adjmat_col_addr,
@@ -37,6 +33,7 @@ module Bellman(input logic clk, bellman_reset,
   always_comb begin
     vertmat_we_a = 0;
     vertmat_addr_a = 0;
+    vertmat_addr_b = 0;
     vertmat_data_a = 0;
     vertmat_we_b = 0;
     vertmat_data_b = 0;

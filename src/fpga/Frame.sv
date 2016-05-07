@@ -99,7 +99,7 @@ module Frame(input logic clk, reset,
 
     Character character(.address(char_addr),.clock(clk),.q(char_show));
 
-    always_ff @(clk) begin
+    always_ff @(posedge clk) begin
       if (we) frame_buffer[wp] <= char;
     end
 
