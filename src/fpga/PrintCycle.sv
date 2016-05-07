@@ -16,7 +16,7 @@ module PrintCycle(input logic clk, print_reset,
 
     logic [`PRED_WIDTH:0] i, j, k, l, m; //Indices
 
-    logic [5:0] px, py;
+    logic [5:0] px, py = -1;
     assign frame_x = px;
     assign frame_y = py;
 
@@ -34,8 +34,6 @@ module PrintCycle(input logic clk, print_reset,
           if (vertmat_q_b[`VERT_WIDTH]) vertmat_addr_b = l;
         end
         START_WRITE: begin
-          frame_we = 1;
-          frame_char = 0;
           vertmat_addr_b = l;
         end
         FIRST_DIGIT: begin
@@ -106,14 +104,14 @@ module PrintCycle(input logic clk, print_reset,
           else state <= READ;
         end
         START_WRITE: begin
-          if (px + 1 == 40 && py + 1 == 30) begin
+          if (py + 1 == 30) begin
             py <= 0;
             px <= 0;
-          end else if (px + 1 == 40) begin
+          end else begin
             py <= py + 1;
             px <= 0;
-          end else px <= px + 1;
-          state <= FIRST_DIGIT;
+          end 
+			 state <= FIRST_DIGIT;
         end
         FIRST_DIGIT: begin
           if (px + 1 == 40 && py + 1 == 30) begin

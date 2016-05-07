@@ -1,5 +1,5 @@
 // Quartus II Verilog Template
-// Single port RAM with single read/write address 
+// Single port RAM with single read/write address
 `include "Const.vh"
 
 module AdjMat
@@ -14,7 +14,6 @@ module AdjMat
 
 	logic [ADDR_WIDTH:0] addr;
 	assign addr = row_addr*`NODES + col_addr;
-
 	// Declare the RAM variable
 	reg [DATA_WIDTH:0] ram[2**ADDR_WIDTH:0];
 
@@ -32,7 +31,7 @@ module AdjMat
 
 	// Continuous assignment implies read returns NEW data.
 	// This is the natural behavior of the TriMatrix memory
-	// blocks in Single Port mode.  
+	// blocks in Single Port mode.
 	assign q = ram[addr_reg];
 
 endmodule

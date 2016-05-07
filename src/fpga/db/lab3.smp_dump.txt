@@ -6,6 +6,62 @@ state.ST_COMP_TRANS 1 0 0 1
 state.ST_UNCOMP_TRANS 1 0 1 0 
 state.ST_UNCOMP_WR_SUBBURST 1 1 0 0 
 
+State Machine - |SoCKit_Top|lab3:u0|FOREX:frame_0|next_state
+Name 
+next_state.CONTAINER 
+
+State Machine - |SoCKit_Top|lab3:u0|FOREX:frame_0|state
+Name state.RESET state.IDLE state.CONTAINER 
+state.RESET 0 0 0 
+state.CONTAINER 1 0 1 
+state.IDLE 1 1 0 
+
+State Machine - |SoCKit_Top|lab3:u0|FOREX:frame_0|Container:container|next_state
+Name next_state.RUN_BELLMAN next_state.RUN_PRINT_CYCLE next_state.RUN_CYCLE_DETECT 
+next_state.RUN_BELLMAN 0 0 0 
+next_state.RUN_CYCLE_DETECT 1 0 1 
+next_state.RUN_PRINT_CYCLE 1 1 0 
+
+State Machine - |SoCKit_Top|lab3:u0|FOREX:frame_0|Container:container|state
+Name state.IDLE state.DONE state.RUN_PRINT_CYCLE state.RUN_CYCLE_DETECT state.RUN_BELLMAN state.UPDATE_REV state.UPDATE_FOR 
+state.UPDATE_FOR 0 0 0 0 0 0 0 
+state.UPDATE_REV 0 0 0 0 0 1 1 
+state.RUN_BELLMAN 0 0 0 0 1 0 1 
+state.RUN_CYCLE_DETECT 0 0 0 1 0 0 1 
+state.RUN_PRINT_CYCLE 0 0 1 0 0 0 1 
+state.DONE 0 1 0 0 0 0 1 
+state.IDLE 1 0 0 0 0 0 1 
+
+State Machine - |SoCKit_Top|lab3:u0|FOREX:frame_0|Container:container|PrintCycle:print_cycle|state
+Name state.RECHECK_CYCLE state.ARROW state.SECOND_DIGIT state.FIRST_DIGIT state.START_WRITE state.CHECK_CYCLE state.IDLE state.READ state.DONE 
+state.READ 0 0 0 0 0 0 0 0 0 
+state.IDLE 0 0 0 0 0 0 1 1 0 
+state.CHECK_CYCLE 0 0 0 0 0 1 0 1 0 
+state.START_WRITE 0 0 0 0 1 0 0 1 0 
+state.FIRST_DIGIT 0 0 0 1 0 0 0 1 0 
+state.SECOND_DIGIT 0 0 1 0 0 0 0 1 0 
+state.ARROW 0 1 0 0 0 0 0 1 0 
+state.RECHECK_CYCLE 1 0 0 0 0 0 0 1 0 
+state.DONE 0 0 0 0 0 0 0 1 1 
+
+State Machine - |SoCKit_Top|lab3:u0|FOREX:frame_0|Container:container|CycleDetect:cycle_detect|state
+Name state.DONE state.FINISH_CYCLE state.WRITE_CYCLE state.READ_CYCLE state.CHECK_CYCLE state.IDLE state.READ 
+state.READ 0 0 0 0 0 0 0 
+state.IDLE 0 0 0 0 0 1 1 
+state.CHECK_CYCLE 0 0 0 0 1 0 1 
+state.READ_CYCLE 0 0 0 1 0 0 1 
+state.WRITE_CYCLE 0 0 1 0 0 0 1 
+state.FINISH_CYCLE 0 1 0 0 0 0 1 
+state.DONE 1 0 0 0 0 0 1 
+
+State Machine - |SoCKit_Top|lab3:u0|FOREX:frame_0|Container:container|Bellman:bellman|state
+Name state.WRITE state.IDLE state.READ state.SETUP state.DONE 
+state.SETUP 0 0 0 0 0 
+state.READ 0 0 1 1 0 
+state.IDLE 0 1 0 1 0 
+state.WRITE 1 0 0 1 0 
+state.DONE 0 0 0 1 1 
+
 State Machine - |SoCKit_Top|lab3:u0|lab3_master_0:master_0|altera_avalon_packets_to_master:transacto|packets_to_master:p2m|state
 Name state.READ_SEND_WAIT state.READ_SEND_ISSUE state.READ_DATA_WAIT state.READ_CMD_WAIT state.READ_ASSERT state.RETURN_PACKET state.WRITE_WAIT state.GET_WRITE_DATA state.GET_ADDR4 state.GET_ADDR3 state.GET_ADDR2 state.GET_ADDR1 state.GET_SIZE2 state.GET_SIZE1 state.GET_EXTRA state.0000 
 state.0000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 

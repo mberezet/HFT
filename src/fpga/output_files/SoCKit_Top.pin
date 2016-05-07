@@ -163,7 +163,7 @@ VCCIO5A                      : AB24      : power  :                   : 2.5V    
 VGA_G[6]                     : AB25      : output : 2.5 V             :         : 5A        : Y              
 VGA_G[2]                     : AB26      : output : 2.5 V             :         : 5A        : Y              
 HSMC_CLKIN_n[1]              : AB27      : input  : 2.5 V             :         : 5B        : Y              
-RESERVED_INPUT_WITH_WEAK_PULLUP : AB28      :        :                   :         : 5B        :                
+hps_io_hps_io_gpio_inst_GPIO00 : AB28      : bidir  : 2.5 V             :         : 5B        : N              
 GND                          : AB29      : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AB30      :        :                   :         : 5B        :                
 GND                          : AC1       :        :                   :         : B0L       :                
@@ -959,7 +959,7 @@ GND                          : Y12       : gnd    :                   :         
 VCC                          : Y13       : power  :                   : 1.1V    :           :                
 GND                          : Y14       : gnd    :                   :         :           :                
 GND                          : Y15       : gnd    :                   :         :           :                
-hps_io_hps_io_gpio_inst_GPIO00 : Y16       : bidir  : 2.5 V             :         : 3B        : N              
+RESERVED_INPUT_WITH_WEAK_PULLUP : Y16       :        :                   :         : 3B        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : Y17       :        :                   :         : 4A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : Y18       :        :                   :         : 4A        :                
 USB_B2_DATA[3]               : Y19       : bidir  : 2.5 V             :         : 4A        : Y              

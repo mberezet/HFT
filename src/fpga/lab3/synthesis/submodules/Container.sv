@@ -1,18 +1,17 @@
 `include "Const.vh"
-
-module Container(input logic clk, reset,
+module Container(input logic clk, container_reset,
                  input logic [`PRED_WIDTH:0] src,
-					  input logic [`PRED_WIDTH:0] u_src,
-					  input logic [`PRED_WIDTH:0] u_dst,
-					  input logic [`WEIGHT_WIDTH:0] u_e,
-                 output logic [4:0] frame_char,
+					       input logic [`PRED_WIDTH:0] u_src,
+					       input logic [`PRED_WIDTH:0] u_dst,
+					       input logic [`WEIGHT_WIDTH:0] u_e,
+                 output logic [5:0] frame_char,
                  output logic [5:0] frame_x,
                  output logic [5:0] frame_y,
                  output logic frame_we,
-                 output logic done);
+                 output logic container_done);
 
-  enum logic [2:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, RUN_CYCLE_DETECT, DONE} state;
-  logic bellman_done, cycle_done, bellman_reset, cycle_reset; //Reset and done registers
+  enum logic [4:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, RUN_CYCLE_DETECT, RUN_PRINT_CYCLE, DONE, IDLE} state, next_state;
+  logic bellman_done, cycle_done, bellman_reset, cycle_reset, print_reset, print_done; //Reset and done registers
 
   //Memory
   /*Vertmat/Adjmat Read Outputs*/
@@ -36,18 +35,28 @@ module Container(input logic clk, reset,
   logic [`PRED_WIDTH:0] bellman_vertmat_addr_b;
   logic [`PRED_WIDTH:0] bellman_adjmat_row_addr;
   logic [`PRED_WIDTH:0] bellman_adjmat_col_addr;
+  logic [`VERT_WIDTH:0] bellman_vertmat_data_b;
+  logic bellman_vertmat_we_b;
+
   logic [`PRED_WIDTH:0] cycle_vertmat_addr_a;
   logic [`PRED_WIDTH:0] cycle_vertmat_addr_b;
   logic [`PRED_WIDTH:0] cycle_adjmat_row_addr;
   logic [`PRED_WIDTH:0] cycle_adjmat_col_addr;
+  logic [`VERT_WIDTH:0] cycle_vertmat_data_b;
+  logic cycle_vertmat_we_b;
 
-  assign vertmat_addr_a = bellman_done ? bellman_vertmat_addr_a : cycle_vertmat_addr_a;
-  assign vertmat_addr_b = bellman_done ? bellman_vertmat_addr_b : cycle_vertmat_addr_b;
+  logic [`PRED_WIDTH:0] print_vertmat_addr_b;
+  logic [`VERT_WIDTH:0] print_vertmat_data_b;
+  logic print_vertmat_we_b;
 
   Bellman bellman(.vertmat_addr_a(bellman_vertmat_addr_a), .vertmat_addr_b(bellman_vertmat_addr_b),
+                  .vertmat_data_b(bellman_vertmat_data_b), .vertmat_we_b(bellman_vertmat_we_b),
                   .adjmat_row_addr(bellman_adjmat_row_addr), .adjmat_col_addr(bellman_adjmat_col_addr), .*);
   CycleDetect cycle_detect(.vertmat_addr_a(cycle_vertmat_addr_a), .vertmat_addr_b(cycle_vertmat_addr_b),
+                          .vertmat_data_b(cycle_vertmat_data_b), .vertmat_we_b(cycle_vertmat_we_b),
                           .adjmat_row_addr(cycle_adjmat_row_addr), .adjmat_col_addr(cycle_adjmat_col_addr), .*);
+  PrintCycle print_cycle(.vertmat_addr_b(print_vertmat_addr_b), .vertmat_data_b(print_vertmat_data_b),
+                          .vertmat_we_b(print_vertmat_we_b),.*);
   VertMat vertmat(.data_a(vertmat_data_a), .data_b(vertmat_data_b),
                   .addr_a(vertmat_addr_a), .addr_b(vertmat_addr_b),
                   .we_a(vertmat_we_a), .we_b(vertmat_we_b),
@@ -56,43 +65,88 @@ module Container(input logic clk, reset,
 					 .we(adjmat_we), .q(adjmat_q), .*);
 
   always_ff @(posedge clk) begin
-    if (reset) begin
-      done <= 0;
+    if (container_reset) begin
       state <= UPDATE_FOR;
+      container_done <= 0;
     end else case (state)
-  		UPDATE_FOR: begin
-  			adjmat_we <= 1;
-  			adjmat_row_addr <= u_src;
-  			adjmat_col_addr <= u_dst;
-  			adjmat_data <= u_e;
-  			state <= UPDATE_REV;
-  		end
+  		UPDATE_FOR: state <= UPDATE_REV;
       UPDATE_REV: begin
-        adjmat_we <= 1;
-        adjmat_row_addr <= u_dst;
-        adjmat_col_addr <= u_src;
-        adjmat_data <= -1*u_e;
-        state <= RUN_BELLMAN;
         bellman_reset <= 1;
+        state <= IDLE;
+        next_state <= RUN_BELLMAN;
       end
       RUN_BELLMAN: begin
-		    adjmat_we <= 0;
         bellman_reset <= 0;
-		    adjmat_row_addr <= bellman_adjmat_row_addr;
-		    adjmat_col_addr <= bellman_adjmat_col_addr;
         if (bellman_done) begin
           cycle_reset <= 1;
-          state <= RUN_CYCLE_DETECT;
+          state <= IDLE;
+          next_state <= RUN_CYCLE_DETECT;
         end
       end
+      IDLE: state <= next_state;
       RUN_CYCLE_DETECT: begin
         cycle_reset <= 0;
-		    adjmat_row_addr <= cycle_adjmat_row_addr;
-		    adjmat_col_addr <= cycle_adjmat_col_addr;
-        if (cycle_done) state <= DONE;
+        if (cycle_done) begin
+          print_reset <= 1;
+          next_state <= RUN_PRINT_CYCLE;
+          state <= IDLE;
+        end
       end
-      DONE: done <= 1;
+      RUN_PRINT_CYCLE: begin
+        print_reset <= 0;
+        if (print_done) state <= DONE;
+      end
+      DONE: container_done <= 1;
       default: state <= DONE;
+    endcase
+  end
+
+  always_comb begin
+    adjmat_we = 0;
+    adjmat_data = 0;
+    adjmat_row_addr = 0;
+    adjmat_col_addr = 0;
+    adjmat_data = 0;
+    vertmat_addr_a = 0;
+    vertmat_addr_b = 0;
+    vertmat_data_b = 0;
+    vertmat_we_b = 0;
+    case (state)
+      UPDATE_FOR: begin
+        adjmat_we = 1;
+        adjmat_data = u_e;
+        adjmat_row_addr = u_src;
+        adjmat_col_addr = u_dst;
+      end
+      UPDATE_REV: begin
+        adjmat_we = 1;
+        adjmat_data = 0;//-1*u_e;
+        adjmat_row_addr = u_dst;
+        adjmat_col_addr = u_src;
+      end
+      RUN_BELLMAN: begin
+        adjmat_we = 0;
+        adjmat_row_addr = bellman_adjmat_row_addr;
+        adjmat_col_addr = bellman_adjmat_col_addr;
+        vertmat_addr_a = bellman_vertmat_addr_a;
+        vertmat_addr_b = bellman_vertmat_addr_b;
+        vertmat_data_b = bellman_vertmat_data_b;
+        vertmat_we_b = bellman_vertmat_we_b;
+      end
+      RUN_CYCLE_DETECT: begin
+        adjmat_row_addr = cycle_adjmat_row_addr;
+        adjmat_col_addr = cycle_adjmat_col_addr;
+        vertmat_addr_a = cycle_vertmat_addr_a;
+        vertmat_addr_b = cycle_vertmat_addr_b;
+        vertmat_data_b = cycle_vertmat_data_b;
+        vertmat_we_b = cycle_vertmat_we_b;
+      end
+      RUN_PRINT_CYCLE: begin
+        vertmat_addr_b = print_vertmat_addr_b;
+        vertmat_data_b = print_vertmat_data_b;
+        vertmat_we_b = print_vertmat_we_b;
+      end
+      default: ;
     endcase
   end
 

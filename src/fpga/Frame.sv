@@ -6,7 +6,7 @@
 
 module Frame(input logic clk, reset,
              input logic [5:0] x, y,
-             input logic [4:0] char,
+             input logic [5:0] char,
              input logic we,
              output logic [7:0] VGA_R, VGA_G, VGA_B,
              output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_n, VGA_SYNC_n);
@@ -86,7 +86,7 @@ module Frame(input logic clk, reset,
     logic [10:0] wp;
     logic [10:0] rp;
     logic [5:0] num_char;
-    logic [4:0] frame_buffer[1199:0]; //40 accross by 30 down
+    logic [5:0] frame_buffer[1199:0]; //40 accross by 30 down
 
     logic [13:0] char_addr;
     logic char_show;
