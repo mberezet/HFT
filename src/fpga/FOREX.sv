@@ -16,7 +16,8 @@ module FOREX(input logic clk,
 				 output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_n,
 				 output logic VGA_SYNC_n,
 				 output [5:0] frame_char,
-		 		 output logic frame_we);
+		 		 output logic frame_we,
+				 output logic [31:0] test);
 
 		enum logic [3:0] {RESET, CONTAINER, IDLE} state, next_state;
 

@@ -61,7 +61,7 @@ module Bellman(input logic clk, bellman_reset,
         vertmat_addr_b = j;
         if (e != 0 && $signed(svw + e) < $signed(dvw)) begin
           vertmat_we_b = 1;
-          vertmat_data_b = {i, $signed(svw + e)};
+          vertmat_data_b = {1'b0,i, $signed(svw + e)};
         end
       end
       default: ;

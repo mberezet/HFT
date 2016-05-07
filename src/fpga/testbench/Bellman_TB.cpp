@@ -47,7 +47,7 @@ int main(int argc, char **argv, char **env) {
     top->reset = 0;
 
     if((int)top->frame_we == 1){
-      std::cout << "Char: " << (int)top->frame_char << "\n";
+      std::cout << "Char: " << (int)top->frame_char << "Pred: " << (int)top->test << "\n";
     }
     top->write = 0;
     top->chipselect = 0;

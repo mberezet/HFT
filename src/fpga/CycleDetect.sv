@@ -80,7 +80,7 @@ module CycleDetect(input logic clk, cycle_reset,
           end
           IDLE: begin
             k <= j;
-            m <= j;
+            //m <= j;
             state <= CHECK_CYCLE;
             //l <= vertmat_q_b[(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)];
           end

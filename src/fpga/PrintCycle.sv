@@ -64,8 +64,9 @@ module PrintCycle(input logic clk, print_reset,
           else frame_char = m - 10;
         end
         ARROW: begin
+          vertmat_addr_b = j;
           if (l != k) begin
-            vertmat_addr_b = m;
+            vertmat_addr_b = l;
             frame_we = 1;
             frame_char = 37;
           end
@@ -142,7 +143,7 @@ module PrintCycle(input logic clk, print_reset,
             py <= py + 1;
             px <= 0;
           end else px <= px + 1;
-          state <= CHECK_CYCLE;
+          state <= RECHECK_CYCLE;
         end
         RECHECK_CYCLE: begin
           m <= l;
