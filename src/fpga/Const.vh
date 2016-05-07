@@ -1,7 +1,7 @@
 `ifndef _CONST_VH_
 `define _CONST_VH_
 
-`define NODES 5
+`define NODES 7
 /*1 less than width*/
 `define VERT_WIDTH 39
 `define WEIGHT_WIDTH 31

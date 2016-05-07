@@ -16,7 +16,7 @@ module CycleDetect(input logic clk, cycle_reset,
                    output logic cycle_done);
 
       enum logic [3:0] {READ, IDLE, CHECK_CYCLE, READ_CYCLE, WRITE_CYCLE, FINISH_CYCLE, DONE} state;
-      logic [`PRED_WIDTH:0] i, j, k, l, m; //Indices
+      logic [`PRED_WIDTH:0] i, j, k, l; //Indices
       logic signed [`WEIGHT_WIDTH:0] svw, dvw; //Source Vertex Weight, Destination Vertex Weight, Signed
       logic signed [`WEIGHT_WIDTH:0] e; //Edge Weight, Signed
 
@@ -36,9 +36,9 @@ module CycleDetect(input logic clk, cycle_reset,
           IDLE: vertmat_addr_b = j;
           CHECK_CYCLE: begin
             vertmat_addr_b = j;
-            if (e != 0 && $signed(svw + e) < $signed(dvw)) begin //Found Negative Weight Cycle
-              vertmat_addr_b = l;
-            end
+            //if (e != 0 && $signed(svw + e) < $signed(dvw)) begin //Found Negative Weight Cycle
+            //  vertmat_addr_b = l;
+            //end
           end
           READ_CYCLE: begin
             vertmat_we_b = 0;
@@ -47,7 +47,7 @@ module CycleDetect(input logic clk, cycle_reset,
           WRITE_CYCLE: begin
             vertmat_we_b = 1;
             vertmat_data_b = {1'b1, vertmat_q_b[`VERT_WIDTH - 1:0]};
-            vertmat_addr_b = m;
+            vertmat_addr_b = l;
           end
           FINISH_CYCLE: begin
             vertmat_we_b = 0;
@@ -80,24 +80,21 @@ module CycleDetect(input logic clk, cycle_reset,
           end
           IDLE: begin
             k <= j;
-            //m <= j;
             state <= CHECK_CYCLE;
-            //l <= vertmat_q_b[(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)];
           end
           CHECK_CYCLE: begin
-            l <= vertmat_q_b[(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)];
             if (e != 0 && $signed(svw + e) < $signed(dvw)) begin //Found Negative Weight Cycle
-              state <= WRITE_CYCLE;
+              l <= vertmat_q_b[(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)];
+              state <= READ_CYCLE;
             end else state <= READ;
           end
           READ_CYCLE: begin
-            m <= l;
-            l <= vertmat_q_b[(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)];
             if (l == k) begin //Read Cycle
               state <= FINISH_CYCLE;
             end else state <= WRITE_CYCLE;
           end
           WRITE_CYCLE: begin
+            l <= vertmat_q_b[(`VERT_WIDTH-1):(`WEIGHT_WIDTH+1)];
             state <= READ_CYCLE;
           end
           FINISH_CYCLE: state <= READ;

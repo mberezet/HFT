@@ -41,7 +41,7 @@ module Bellman(input logic clk, bellman_reset,
       SETUP: begin
         vertmat_we_a = 1;
         vertmat_addr_a = k;
-        if (k == `NODES) ;
+        if (k + 1 == `NODES) ;
         else if (k == src) begin
           vertmat_data_a[`WEIGHT_WIDTH:0] = 0;
         end else begin

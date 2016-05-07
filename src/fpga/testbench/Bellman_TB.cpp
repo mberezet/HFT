@@ -11,7 +11,7 @@
 #define WEIGHT_WIDTH 32
 
 #define NODES 4
-#define CYCLES 1200
+#define CYCLES 2000
 #define PRINT_CYCLE 5
 
 int extend_signed_int_width(unsigned int val, unsigned int width);
@@ -97,19 +97,43 @@ int main(int argc, char **argv, char **env) {
       case 405:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = -7;
+        top->writedata = -12;
         top->address = 1;
         break;
       case 500:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = src_dst(4, 1);
+        top->writedata = src_dst(4, 5);
         top->address = 0;
         break;
       case 505:
         top->write = 1;
         top->chipselect = 1;
-        top->writedata = -9;
+        top->writedata = 1;
+        top->address = 1;
+        break;
+      case 600:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = src_dst(5, 6);
+        top->address = 0;
+        break;
+      case 605:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = 1;
+        top->address = 1;
+        break;
+      case 700:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = src_dst(6, 1);
+        top->address = 0;
+        break;
+      case 705:
+        top->write = 1;
+        top->chipselect = 1;
+        top->writedata = -7;
         top->address = 1;
         break;
     }
