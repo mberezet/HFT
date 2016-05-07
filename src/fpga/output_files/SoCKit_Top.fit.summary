@@ -1,12 +1,12 @@
-Fitter Status : Successful - Sat May  7 13:57:07 2016
+Fitter Status : Successful - Sat May  7 16:05:27 2016
 Quartus II 32-bit Version : 13.1.1 Build 166 11/26/2013 SJ Full Version
 Revision Name : SoCKit_Top
 Top-level Entity Name : SoCKit_Top
 Family : Cyclone V
 Device : 5CSXFC6D6F31C8ES
 Timing Models : Preliminary
-Logic utilization (in ALMs) : 4,827 / 41,910 ( 12 % )
-Total registers : 8364
+Logic utilization (in ALMs) : 4,905 / 41,910 ( 12 % )
+Total registers : 8374
 Total pins : 289 / 499 ( 58 % )
 Total virtual pins : 0
 Total block memory bits : 52,224 / 5,662,720 ( < 1 % )
