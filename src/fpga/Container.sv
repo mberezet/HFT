@@ -8,8 +8,7 @@ module Container(input logic clk, container_reset,
                  output logic [5:0] frame_x,
                  output logic [5:0] frame_y,
                  output logic frame_we,
-                 output logic container_done,
-                 output logic [31:0] test);
+                 output logic container_done);
 
   enum logic [4:0] {UPDATE_FOR, UPDATE_REV, RUN_BELLMAN, RUN_CYCLE_DETECT, RUN_PRINT_CYCLE, DONE, IDLE} state, next_state;
   logic bellman_done, cycle_done, bellman_reset, cycle_reset, print_reset, print_done; //Reset and done registers

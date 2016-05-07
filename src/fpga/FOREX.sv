@@ -14,10 +14,7 @@ module FOREX(input logic clk,
 				 input logic [2:0] address,
 				 output logic [7:0] VGA_R, VGA_G, VGA_B,
 				 output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_n,
-				 output logic VGA_SYNC_n,
-				 output [5:0] frame_char,
-		 		 output logic frame_we,
-				 output logic [31:0] test);
+				 output logic VGA_SYNC_n);
 
 		enum logic [3:0] {RESET, CONTAINER, IDLE} state, next_state;
 
@@ -26,13 +23,13 @@ module FOREX(input logic clk,
 	  logic [`PRED_WIDTH:0] u_dst;
 	  logic [`WEIGHT_WIDTH:0] u_e;
 		logic [5:0] frame_x, frame_y;
-		//logic [5:0] frame_char;
-		//logic frame_we;
+		logic [5:0] frame_char;
+		logic frame_we;
 
 		logic container_done;
 		logic container_reset;
 
-		//Frame buffer(.x(frame_x), .y(frame_y), .char(frame_char), .we(frame_we), .*);
+		Frame buffer(.x(frame_x), .y(frame_y), .char(frame_char), .we(frame_we), .*);
 		Container container(.*);
 
 		always_ff @(posedge clk) begin
