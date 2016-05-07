@@ -1,5 +1,5 @@
 Analysis & Synthesis report for SoCKit_Top
-Sat May  7 13:50:34 2016
+Sat May  7 15:58:44 2016
 Quartus II 32-bit Version 13.1.1 Build 166 11/26/2013 SJ Full Version
 
 
@@ -297,7 +297,7 @@ applicable agreement for further details.
 +-------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                  ;
 +---------------------------------+---------------------------------------------+
-; Analysis & Synthesis Status     ; Successful - Sat May  7 13:50:33 2016       ;
+; Analysis & Synthesis Status     ; Successful - Sat May  7 15:58:43 2016       ;
 ; Quartus II 32-bit Version       ; 13.1.1 Build 166 11/26/2013 SJ Full Version ;
 ; Revision Name                   ; SoCKit_Top                                  ;
 ; Top-level Entity Name           ; SoCKit_Top                                  ;
@@ -412,12 +412,12 @@ applicable agreement for further details.
 ; Number detected on machine ; 2           ;
 ; Maximum allowed            ; 2           ;
 ;                            ;             ;
-; Average used               ; 1.02        ;
+; Average used               ; 1.00        ;
 ; Maximum used               ; 2           ;
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
-;     Processor 2            ;   2.5%      ;
+;     Processor 2            ; < 0.1%      ;
 +----------------------------+-------------+
 
 
@@ -526,14 +526,14 @@ applicable agreement for further details.
 +---------------------------------------------+------------------+
 ; Resource                                    ; Usage            ;
 +---------------------------------------------+------------------+
-; Estimate of Logic utilization (ALMs needed) ; 5795             ;
+; Estimate of Logic utilization (ALMs needed) ; 5796             ;
 ;                                             ;                  ;
-; Combinational ALUT usage for logic          ; 5089             ;
+; Combinational ALUT usage for logic          ; 5093             ;
 ;     -- 7 input functions                    ; 80               ;
-;     -- 6 input functions                    ; 2634             ;
-;     -- 5 input functions                    ; 266              ;
-;     -- 4 input functions                    ; 301              ;
-;     -- <=3 input functions                  ; 1808             ;
+;     -- 6 input functions                    ; 2638             ;
+;     -- 5 input functions                    ; 264              ;
+;     -- 4 input functions                    ; 302              ;
+;     -- <=3 input functions                  ; 1809             ;
 ;                                             ;                  ;
 ; Dedicated logic registers                   ; 8143             ;
 ;                                             ;                  ;
@@ -545,7 +545,7 @@ applicable agreement for further details.
 ; Total DLLs                                  ; 1                ;
 ; Maximum fan-out node                        ; OSC_50_B4A~input ;
 ; Maximum fan-out                             ; 7896             ;
-; Total fan-out                               ; 52241            ;
+; Total fan-out                               ; 52262            ;
 ; Average fan-out                             ; 3.55             ;
 +---------------------------------------------+------------------+
 
@@ -555,7 +555,7 @@ applicable agreement for further details.
 +--------------------------------------------------------------------------------------------------------------+-------------------+--------------+-------------------+------------+------+--------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------+
 ; Compilation Hierarchy Node                                                                                   ; LC Combinationals ; LC Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                                                                                                                                                                                                                                                                    ; Library Name ;
 +--------------------------------------------------------------------------------------------------------------+-------------------+--------------+-------------------+------------+------+--------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------+
-; |SoCKit_Top                                                                                                  ; 5089 (27)         ; 8143 (21)    ; 52224             ; 0          ; 289  ; 0            ; |SoCKit_Top                                                                                                                                                                                                                                                                                                                            ; work         ;
+; |SoCKit_Top                                                                                                  ; 5093 (27)         ; 8143 (21)    ; 52224             ; 0          ; 289  ; 0            ; |SoCKit_Top                                                                                                                                                                                                                                                                                                                            ; work         ;
 ;    |lab3:u0|                                                                                                 ; 4968 (0)          ; 8044 (0)     ; 52224             ; 0          ; 0    ; 0            ; |SoCKit_Top|lab3:u0                                                                                                                                                                                                                                                                                                                    ; lab3         ;
 ;       |FOREX:frame_0|                                                                                        ; 4150 (7)          ; 7405 (50)    ; 51712             ; 0          ; 0    ; 0            ; |SoCKit_Top|lab3:u0|FOREX:frame_0                                                                                                                                                                                                                                                                                                      ; lab3         ;
 ;          |Container:container|                                                                               ; 417 (160)         ; 132 (13)     ; 35328             ; 0          ; 0    ; 0            ; |SoCKit_Top|lab3:u0|FOREX:frame_0|Container:container                                                                                                                                                                                                                                                                                  ; lab3         ;
@@ -675,8 +675,8 @@ applicable agreement for further details.
 ;             |altera_merlin_arbitrator:arb|                                                                   ; 8 (6)             ; 3 (3)        ; 0                 ; 0          ; 0    ; 0            ; |SoCKit_Top|lab3:u0|lab3_mm_interconnect_0:mm_interconnect_0|lab3_mm_interconnect_0_cmd_xbar_mux:cmd_xbar_mux|altera_merlin_arbitrator:arb                                                                                                                                                                                             ; lab3         ;
 ;                |altera_merlin_arb_adder:adder|                                                               ; 2 (2)             ; 0 (0)        ; 0                 ; 0          ; 0    ; 0            ; |SoCKit_Top|lab3:u0|lab3_mm_interconnect_0:mm_interconnect_0|lab3_mm_interconnect_0_cmd_xbar_mux:cmd_xbar_mux|altera_merlin_arbitrator:arb|altera_merlin_arb_adder:adder                                                                                                                                                               ; lab3         ;
 ;          |lab3_mm_interconnect_0_rsp_xbar_demux:rsp_xbar_demux|                                              ; 4 (4)             ; 0 (0)        ; 0                 ; 0          ; 0    ; 0            ; |SoCKit_Top|lab3:u0|lab3_mm_interconnect_0:mm_interconnect_0|lab3_mm_interconnect_0_rsp_xbar_demux:rsp_xbar_demux                                                                                                                                                                                                                      ; lab3         ;
-;    |sld_hub:auto_hub|                                                                                        ; 94 (1)            ; 78 (0)       ; 0                 ; 0          ; 0    ; 0            ; |SoCKit_Top|sld_hub:auto_hub                                                                                                                                                                                                                                                                                                           ; work         ;
-;       |sld_jtag_hub:\jtag_hub_gen:sld_jtag_hub_inst|                                                         ; 93 (60)           ; 78 (50)      ; 0                 ; 0          ; 0    ; 0            ; |SoCKit_Top|sld_hub:auto_hub|sld_jtag_hub:\jtag_hub_gen:sld_jtag_hub_inst                                                                                                                                                                                                                                                              ; work         ;
+;    |sld_hub:auto_hub|                                                                                        ; 98 (1)            ; 78 (0)       ; 0                 ; 0          ; 0    ; 0            ; |SoCKit_Top|sld_hub:auto_hub                                                                                                                                                                                                                                                                                                           ; work         ;
+;       |sld_jtag_hub:\jtag_hub_gen:sld_jtag_hub_inst|                                                         ; 97 (64)           ; 78 (50)      ; 0                 ; 0          ; 0    ; 0            ; |SoCKit_Top|sld_hub:auto_hub|sld_jtag_hub:\jtag_hub_gen:sld_jtag_hub_inst                                                                                                                                                                                                                                                              ; work         ;
 ;          |sld_rom_sr:hub_info_reg|                                                                           ; 16 (16)           ; 9 (9)        ; 0                 ; 0          ; 0    ; 0            ; |SoCKit_Top|sld_hub:auto_hub|sld_jtag_hub:\jtag_hub_gen:sld_jtag_hub_inst|sld_rom_sr:hub_info_reg                                                                                                                                                                                                                                      ; work         ;
 ;          |sld_shadow_jsm:shadow_jsm|                                                                         ; 17 (17)           ; 19 (19)      ; 0                 ; 0          ; 0    ; 0            ; |SoCKit_Top|sld_hub:auto_hub|sld_jtag_hub:\jtag_hub_gen:sld_jtag_hub_inst|sld_shadow_jsm:shadow_jsm                                                                                                                                                                                                                                    ; work         ;
 +--------------------------------------------------------------------------------------------------------------+-------------------+--------------+-------------------+------------+------+--------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------+
@@ -6093,9 +6093,9 @@ Note: In order to hide this table in the UI and the text report file, please set
 +---------------------------------+--------------+
 ; Partition Name                  ; Elapsed Time ;
 +---------------------------------+--------------+
-; Top                             ; 00:00:21     ;
-; lab3_hps_0_hps_io_border:border ; 00:00:03     ;
-; sld_hub:auto_hub                ; 00:00:02     ;
+; Top                             ; 00:00:22     ;
+; lab3_hps_0_hps_io_border:border ; 00:00:04     ;
+; sld_hub:auto_hub                ; 00:00:03     ;
 +---------------------------------+--------------+
 
 
@@ -6105,7 +6105,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus II 32-bit Analysis & Synthesis
     Info: Version 13.1.1 Build 166 11/26/2013 SJ Full Version
-    Info: Processing started: Sat May  7 13:49:45 2016
+    Info: Processing started: Sat May  7 15:57:53 2016
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off lab3 -c SoCKit_Top
 Info (20030): Parallel compilation is enabled and will use 2 of the 2 processors detected
 Warning (10229): Verilog HDL Expression warning at SoCKit_top.v(585): truncated literal to match 20 bits
@@ -6808,17 +6808,17 @@ Warning (21074): Design contains 23 input pin(s) that do not drive logic
     Warning (15610): No output dependent on input pin "USB_RD_n"
     Warning (15610): No output dependent on input pin "USB_RESET_n"
     Warning (15610): No output dependent on input pin "USB_WR_n"
-Info (21057): Implemented 13802 device resources after synthesis - the final resource count might be different
+Info (21057): Implemented 13806 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 44 input pins
     Info (21059): Implemented 99 output pins
     Info (21060): Implemented 150 bidirectional pins
-    Info (21061): Implemented 12776 logic cells
+    Info (21061): Implemented 12780 logic cells
     Info (21064): Implemented 82 RAM segments
     Info (21066): Implemented 1 delay-locked loops
 Info: Quartus II 32-bit Analysis & Synthesis was successful. 0 errors, 283 warnings
-    Info: Peak virtual memory: 547 megabytes
-    Info: Processing ended: Sat May  7 13:50:34 2016
-    Info: Elapsed time: 00:00:49
-    Info: Total CPU time (on all processors): 00:00:45
+    Info: Peak virtual memory: 551 megabytes
+    Info: Processing ended: Sat May  7 15:58:44 2016
+    Info: Elapsed time: 00:00:51
+    Info: Total CPU time (on all processors): 00:00:47
 
 

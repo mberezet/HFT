@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(5CSXFC6D6F31ES) Path("/home/user3/spring16/sl3881/Desktop/HFT/src/fpga/output_files/") File("SoCKit_Top.sof") MfrSpec(OpMask(1));
+		Device PartName(5CSXFC6D6F31ES) Path("/home/user3/spring16/kjk2150/Desktop/HFT2/src/fpga/output_files/") File("SoCKit_Top.sof") MfrSpec(OpMask(1));
 	P ActionCode(Ign)
 		Device PartName(SOCVHPS) MfrSpec(OpMask(0));
 
