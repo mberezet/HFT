@@ -1,6 +1,7 @@
 #High-Frequency Foreign Exchange Currency Trading (Forex HFT)
 
 ###Spring 2016
+###Autumn 2016:  contributor mberezet
 
 ####Members: Graham Gobieski, Kevin Kwan, Ziyi Zhu, Shang Liu
 #####UNIs: gsg2120, kjk2150, zz2374, sl3881
